@@ -1,0 +1,15 @@
+<?php
+// Database connection settings for JawsDB
+$host = 'jj820qt5lpu6krut.cbetxkdyhwsb.us-east-1.rds.amazonaws.com'; // JawsDB host
+$username = 'o9fkjfrbhuna7i61'; // JawsDB username
+$password = 'ehv2ecqmxp1cpjy6'; // JawsDB password
+$dbname = 'o0gsqsrnl17sb6rh'; // JawsDB database name
+
+// Create connection
+$conn = new mysqli($host, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+?>
