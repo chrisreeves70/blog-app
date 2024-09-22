@@ -79,7 +79,7 @@ if ($isLoggedIn) {
             border-radius: 5px; /* Round corners */
         }
         button {
-            color: white; /* Text color */
+            color: black; /* Black text color */
             cursor: pointer; /* Pointer cursor on hover */
         }
         button[type="submit"] {
@@ -129,5 +129,4 @@ if ($isLoggedIn) {
     <?php endif; ?>
 </body>
 </html>
-
 
