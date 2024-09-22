@@ -117,11 +117,7 @@ $result_posts = $conn->query($sql_posts);
         ?>
     </table>
 
-    <!-- Back to Main Page and Logout Buttons -->
-    <br><br>
-    <a href="index.php">
-        <button>Back to Main Page</button>
-    </a>
+   
     <a href="index.php">
         <button>Logout</button>
     </a>
