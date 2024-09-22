@@ -9,10 +9,11 @@ if (isset($_POST['delete_user_id'])) {
     $stmt = $conn->prepare($sql_delete_user);
     $stmt->bind_param("i", $delete_user_id);
     if ($stmt->execute()) {
+        echo "User deleted successfully!";
         header("Location: admin.php"); // Redirect to refresh the page
         exit;
     } else {
-        echo "<p style='color:red;'>Error deleting user: " . $conn->error . "</p>";
+        echo "Error deleting user: " . $conn->error;
     }
 }
 
@@ -23,10 +24,11 @@ if (isset($_POST['delete_post_id'])) {
     $stmt = $conn->prepare($sql_delete_post);
     $stmt->bind_param("i", $delete_post_id);
     if ($stmt->execute()) {
+        echo "Post deleted successfully!";
         header("Location: admin.php"); // Redirect to refresh the page
         exit;
     } else {
-        echo "<p style='color:red;'>Error deleting post: " . $conn->error . "</p>";
+        echo "Error deleting post: " . $conn->error;
     }
 }
 
@@ -35,7 +37,7 @@ $sql_users = "SELECT * FROM users";
 $result_users = $conn->query($sql_users);
 
 // Fetch all posts
-$sql_posts = "SELECT posts.*, users.username FROM posts JOIN users ON posts.user_id = users.id";
+$sql_posts = "SELECT * FROM posts";
 $result_posts = $conn->query($sql_posts);
 ?>
 
@@ -45,53 +47,47 @@ $result_posts = $conn->query($sql_posts);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
-    <link rel="stylesheet" type="text/css" href="styles.css"> <!-- Link to your existing styles -->
     <style>
         body {
-            text-align: center;
             font-family: Arial, sans-serif;
-            margin: 20px;
+            background-color: #f4f4f4; /* Light background color */
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
         }
         table {
-            margin: 20px auto;
-            width: 80%;
+            width: 100%;
             border-collapse: collapse;
+            margin-bottom: 20px;
         }
         th, td {
             border: 1px solid #ccc;
-            padding: 10px;
+            padding: 8px;
             text-align: left;
         }
         th {
-            background-color: #007BFF;
+            background-color: #007BFF; /* Blue header */
             color: white;
         }
-        h1, h2 {
-            color: #333;
+        .logout-button {
+            background-color: red; /* Red background */
+            color: black; /* Black text */
+            border: 1px solid black; /* Black border */
+            padding: 10px 20px; /* Padding for better touch targets */
+            border-radius: 5px; /* Round corners */
+            cursor: pointer; /* Pointer cursor on hover */
+            margin-top: 20px; /* Space above the button */
+            display: block; /* Make button a block element */
+            width: fit-content; /* Fit the width to the content */
+            margin-left: auto; /* Center the button */
+            margin-right: auto; /* Center the button */
         }
-        button {
-            background-color: #90EE90; /* Light green */
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            color: black;
-        }
-        button:hover {
-            background-color: #76c776; /* Darker green on hover */
+        .logout-button:hover {
+            background-color: darkred; /* Darker red on hover */
         }
     </style>
-    <script>
-        // JavaScript confirmation function for user deletion
-        function confirmDeleteUser() {
-            return confirm("Are you sure you want to delete this user?");
-        }
-
-        // JavaScript confirmation function for post deletion
-        function confirmDeletePost() {
-            return confirm("Are you sure you want to delete this post?");
-        }
-    </script>
 </head>
 <body>
     <h1>Admin Panel</h1>
@@ -112,7 +108,7 @@ $result_posts = $conn->query($sql_posts);
                         <td>" . htmlspecialchars($row['email']) . "</td>
                         <td>
                             <form method='POST' action='admin.php' onsubmit='return confirmDeleteUser();'>
-                                <input type='hidden' name='delete_user_id' value='" . htmlspecialchars($row['id']) . "'>
+                                <input type='hidden' name='delete_user_id' value='" . $row['id'] . "'>
                                 <input type='submit' value='Delete User'>
                             </form>
                         </td>
@@ -130,7 +126,6 @@ $result_posts = $conn->query($sql_posts);
         <tr>
             <th>Title</th>
             <th>Content</th>
-            <th>Author</th>
             <th>Action</th>
         </tr>
         <?php
@@ -139,25 +134,23 @@ $result_posts = $conn->query($sql_posts);
                 echo "<tr>
                         <td>" . htmlspecialchars($row['title']) . "</td>
                         <td>" . htmlspecialchars($row['content']) . "</td>
-                        <td>" . htmlspecialchars($row['username']) . "</td>
                         <td>
                             <form method='POST' action='admin.php' onsubmit='return confirmDeletePost();'>
-                                <input type='hidden' name='delete_post_id' value='" . htmlspecialchars($row['id']) . "'>
+                                <input type='hidden' name='delete_post_id' value='" . $row['id'] . "'>
                                 <input type='submit' value='Delete Post'>
                             </form>
                         </td>
                       </tr>";
             }
         } else {
-            echo "<tr><td colspan='4'>No posts found</td></tr>";
+            echo "<tr><td colspan='3'>No posts found</td></tr>";
         }
         ?>
     </table>
 
     <a href="logout.php">
-        <button>Logout</button>
+        <button class="logout-button">Logout</button>
     </a>
-
 </body>
 </html>
 
