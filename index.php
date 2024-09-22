@@ -106,21 +106,27 @@ if ($isLoggedIn) {
         }
         .create-post-button {
             background-color: #90EE90; /* Green for create post button */
+            width: auto; /* Make button auto-sized */
+            padding: 10px 20px; /* Adjust padding */
         }
         .logout-button {
             background-color: #FF4500; /* Red for logout button */
             color: white; /* White text color */
-            width: 25%; /* Set a smaller width for the logout button */
-            padding: 10px; /* Add padding for better touch targets */
-            margin: 10px auto; /* Center logout button */
+            width: auto; /* Make button auto-sized */
+            padding: 10px 20px; /* Adjust padding */
+            margin: 10px auto; /* Center the button */
             border: 1px solid black; /* Add black border */
             border-radius: 5px; /* Round corners */
         }
         .sign-up-button {
             background-color: #007BFF; /* Muted blue for sign-up button */
+            width: auto; /* Make button auto-sized */
+            padding: 10px 20px; /* Adjust padding */
         }
         .admin-login-button {
             background-color: #FF4500; /* Muted red for admin login button */
+            width: auto; /* Make button auto-sized */
+            padding: 10px 20px; /* Adjust padding */
         }
     </style>
 </head>
