@@ -25,6 +25,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "Error: " . $stmt->error;
     }
 }
+
+// Fetch posts along with the author's username
+$posts = [];
+$result = $conn->query("
+    SELECT posts.*, users.username 
+    FROM posts 
+    JOIN users ON posts.user_id = users.id 
+    ORDER BY posts.created_at DESC
+");
+if ($result->num_rows > 0) {
+    $posts = $result->fetch_all(MYSQLI_ASSOC);
+}
 ?>
 
 <!DOCTYPE html>
@@ -82,6 +94,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Submit button -->
         <button type="submit" class="create-button">Create Post</button>
     </form>
+
+    <!-- Display existing posts -->
+    <h2>Existing Posts</h2>
+    <?php foreach ($posts as $post): ?>
+        <div class="post">
+            <h3><?php echo htmlspecialchars($post['title']); ?></h3>
+            <p><?php echo htmlspecialchars($post['content']); ?></p>
+            <p><strong>Author:</strong> <?php echo htmlspecialchars($post['username']); ?></p>
+        </div>
+    <?php endforeach; ?>
 
     <!-- Back to Home button -->
     <button class="back-button" onclick="window.location.href='index.php'">Back to Home</button>
