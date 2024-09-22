@@ -100,6 +100,10 @@ if ($isLoggedIn) {
     <?php if ($isLoggedIn): ?>
         <h1>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></h1>
         <h2>Posts</h2>
+        
+        <!-- Create Post Button -->
+        <button class="small-button sign-up-button" onclick="window.location.href='create_post.php'">Create Post</button>
+
         <?php foreach ($posts as $post): ?>
             <div class="post">
                 <h3><?php echo htmlspecialchars($post['title']); ?></h3>
@@ -129,4 +133,6 @@ if ($isLoggedIn) {
     <?php endif; ?>
 </body>
 </html>
+
+
 
