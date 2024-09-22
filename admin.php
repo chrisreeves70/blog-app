@@ -1,12 +1,6 @@
 <?php
-session_start();
-require 'config.php'; // Include the database connection
-
-// Check if admin is logged in
-if (!isset($_SESSION['admin_logged_in'])) {
-    header("Location: admin_login.php");
-    exit;
-}
+// Include your database connection here
+include 'config.php';
 
 // Delete a user if the delete_user_id is set
 if (isset($_POST['delete_user_id'])) {
@@ -27,7 +21,6 @@ if (isset($_POST['delete_user_id'])) {
 if (isset($_POST['delete_post_id'])) {
     $delete_post_id = $_POST['delete_post_id'];
     $sql_delete_post = "DELETE FROM posts WHERE id = ?";
-    $stmt = $conn->prepare($sql_delete_post);
     $stmt->bind_param("i", $delete_post_id);
     if ($stmt->execute()) {
         echo "Post deleted successfully!";
@@ -80,11 +73,11 @@ $result_posts = $conn->query($sql_posts);
         if ($result_users->num_rows > 0) {
             while ($row = $result_users->fetch_assoc()) {
                 echo "<tr>
-                        <td>" . htmlspecialchars($row['username']) . "</td>
-                        <td>" . htmlspecialchars($row['email']) . "</td>
+                        <td>" . $row['username'] . "</td>
+                        <td>" . $row['email'] . "</td>
                         <td>
                             <form method='POST' action='admin.php' onsubmit='return confirmDeleteUser();'>
-                                <input type='hidden' name='delete_user_id' value='" . htmlspecialchars($row['id']) . "'>
+                                <input type='hidden' name='delete_user_id' value='" . $row['id'] . "'>
                                 <input type='submit' value='Delete User'>
                             </form>
                         </td>
@@ -108,11 +101,11 @@ $result_posts = $conn->query($sql_posts);
         if ($result_posts->num_rows > 0) {
             while ($row = $result_posts->fetch_assoc()) {
                 echo "<tr>
-                        <td>" . htmlspecialchars($row['title']) . "</td>
-                        <td>" . htmlspecialchars($row['content']) . "</td>
+                        <td>" . $row['title'] . "</td>
+                        <td>" . $row['content'] . "</td>
                         <td>
                             <form method='POST' action='admin.php' onsubmit='return confirmDeletePost();'>
-                                <input type='hidden' name='delete_post_id' value='" . htmlspecialchars($row['id']) . "'>
+                                <input type='hidden' name='delete_post_id' value='" . $row['id'] . "'>
                                 <input type='submit' value='Delete Post'>
                             </form>
                         </td>
@@ -124,12 +117,14 @@ $result_posts = $conn->query($sql_posts);
         ?>
     </table>
 
-    <!-- Back to Home Button -->
+    <!-- Back to Main Page and Logout Buttons -->
     <br><br>
     <a href="index.php">
-        <button>Back to Home</button>
+        <button>Back to Main Page</button>
+    </a>
+    <a href="index.php">
+        <button>Logout</button>
     </a>
 
 </body>
 </html>
-
