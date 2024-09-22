@@ -1,33 +1,43 @@
 <?php
-session_start();
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// Include your database connection here
+include 'config.php';
 
-// Check if the user is logged in as admin
-if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
-    header('Location: index.php');
-    exit;
+// Delete a user if the delete_user_id is set
+if (isset($_POST['delete_user_id'])) {
+    $delete_user_id = $_POST['delete_user_id'];
+    $sql_delete_user = "DELETE FROM users WHERE id = ?";
+    $stmt = $conn->prepare($sql_delete_user);
+    $stmt->bind_param("i", $delete_user_id);
+    if ($stmt->execute()) {
+        echo "User deleted successfully!";
+        header("Location: admin.php"); // Redirect to refresh the page
+        exit;
+    } else {
+        echo "Error deleting user: " . $conn->error;
+    }
 }
 
-// Database connection
-$servername = 'your_database_host'; // Replace with your JawsDB host
-$username = 'your_database_username'; // Replace with your JawsDB username
-$password = 'your_database_password'; // Replace with your JawsDB password
-$dbname = 'your_database_name'; // Replace with your JawsDB database name
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+// Delete a post if the delete_post_id is set
+if (isset($_POST['delete_post_id'])) {
+    $delete_post_id = $_POST['delete_post_id'];
+    $sql_delete_post = "DELETE FROM posts WHERE id = ?";
+    $stmt = $conn->prepare($sql_delete_post);
+    $stmt->bind_param("i", $delete_post_id);
+    if ($stmt->execute()) {
+        echo "Post deleted successfully!";
+        header("Location: admin.php"); // Redirect to refresh the page
+        exit;
+    } else {
+        echo "Error deleting post: " . $conn->error;
+    }
 }
 
-// Fetch users
-$sql_users = "SELECT id, username, email FROM users";
+// Fetch all users
+$sql_users = "SELECT * FROM users";
 $result_users = $conn->query($sql_users);
 
-// Fetch posts
-$sql_posts = "SELECT id, title FROM posts"; // Adjust if you have a different column
+// Fetch all posts
+$sql_posts = "SELECT * FROM posts";
 $result_posts = $conn->query($sql_posts);
 ?>
 
@@ -41,63 +51,62 @@ $result_posts = $conn->query($sql_posts);
 <body>
     <h1>Admin Panel</h1>
 
+    <!-- List of Users -->
     <h2>Manage Users</h2>
-    <?php if ($result_users && $result_users->num_rows > 0): ?>
-        <table>
-            <tr>
-                <th>ID</th>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Actions</th>
-            </tr>
-            <?php while ($row = $result_users->fetch_assoc()): ?>
-                <tr>
-                    <td><?php echo $row['id']; ?></td>
-                    <td><?php echo $row['username']; ?></td>
-                    <td><?php echo $row['email']; ?></td>
-                    <td>
-                        <form action="delete_user.php" method="POST" style="display:inline;">
-                            <input type="hidden" name="user_id" value="<?php echo $row['id']; ?>">
-                            <button type="submit">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-            <?php endwhile; ?>
-        </table>
-    <?php else: ?>
-        <p>No users found.</p>
-    <?php endif; ?>
+    <table border="1">
+        <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Action</th>
+        </tr>
+        <?php
+        if ($result_users->num_rows > 0) {
+            while ($row = $result_users->fetch_assoc()) {
+                echo "<tr>
+                        <td>" . $row['username'] . "</td>
+                        <td>" . $row['email'] . "</td>
+                        <td>
+                            <form method='POST' action='admin.php'>
+                                <input type='hidden' name='delete_user_id' value='" . $row['id'] . "'>
+                                <input type='submit' value='Delete User'>
+                            </form>
+                        </td>
+                      </tr>";
+            }
+        } else {
+            echo "<tr><td colspan='3'>No users found</td></tr>";
+        }
+        ?>
+    </table>
 
+    <!-- List of Posts -->
     <h2>Manage Posts</h2>
-    <?php if ($result_posts && $result_posts->num_rows > 0): ?>
-        <table>
-            <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Actions</th>
-            </tr>
-            <?php while ($row = $result_posts->fetch_assoc()): ?>
-                <tr>
-                    <td><?php echo $row['id']; ?></td>
-                    <td><?php echo $row['title']; ?></td>
-                    <td>
-                        <form action="delete_post.php" method="POST" style="display:inline;">
-                            <input type="hidden" name="post_id" value="<?php echo $row['id']; ?>">
-                            <button type="submit">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-            <?php endwhile; ?>
-        </table>
-    <?php else: ?>
-        <p>No posts found.</p>
-    <?php endif; ?>
+    <table border="1">
+        <tr>
+            <th>Title</th>
+            <th>Content</th>
+            <th>Action</th>
+        </tr>
+        <?php
+        if ($result_posts->num_rows > 0) {
+            while ($row = $result_posts->fetch_assoc()) {
+                echo "<tr>
+                        <td>" . $row['title'] . "</td>
+                        <td>" . $row['content'] . "</td>
+                        <td>
+                            <form method='POST' action='admin.php'>
+                                <input type='hidden' name='delete_post_id' value='" . $row['id'] . "'>
+                                <input type='submit' value='Delete Post'>
+                            </form>
+                        </td>
+                      </tr>";
+            }
+        } else {
+            echo "<tr><td colspan='3'>No posts found</td></tr>";
+        }
+        ?>
+    </table>
 
-    <a href="index.php">Back to Homepage</a>
 </body>
 </html>
 
-<?php
-// Close the database connection
-$conn->close();
-?>
