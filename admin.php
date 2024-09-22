@@ -117,11 +117,12 @@ $result_posts = $conn->query($sql_posts);
         ?>
     </table>
 
-    <!-- Back to Home Button -->
+    <!-- Back to Login Button -->
     <br><br>
-    <a href="index.php">
-        <button>Back to Home</button>
+    <a href="login.php">
+        <button>Back to Login</button>
     </a>
 
 </body>
 </html>
+
