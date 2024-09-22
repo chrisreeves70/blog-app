@@ -42,6 +42,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="styles.css">
     <title>Register</title>
+    <style>
+        form input {
+            display: block; /* Stack inputs vertically */
+            margin: 10px 0; /* Space between inputs */
+            width: 100%; /* Full width */
+        }
+    </style>
 </head>
 <body>
     <h2>Register</h2>
