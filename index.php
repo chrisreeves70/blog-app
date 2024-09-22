@@ -1,58 +1,3 @@
-<?php
-session_start();
-require 'config.php'; // Include the database connection
-
-// Enable error reporting for debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-// Check if the user is logged in
-$isLoggedIn = isset($_SESSION['user_id']);
-
-// Handle login process if the form is submitted
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-
-    // Prepare and execute SQL statement to find user by email
-    $stmt = $conn->prepare("SELECT id, password, username FROM users WHERE email = ?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $stmt->store_result();
-
-    // Check if user exists
-    if ($stmt->num_rows > 0) {
-        $stmt->bind_result($id, $hashed_password, $username);
-        $stmt->fetch();
-
-        // Verify password
-        if (password_verify($password, $hashed_password)) {
-            $_SESSION['user_id'] = $id; // Store user ID in session
-            $_SESSION['username'] = $username; // Store username in session
-            header("Location: index.php"); // Redirect to self
-            exit();
-        } else {
-            $login_error = "Invalid password."; // Incorrect password message
-            error_log("Invalid password for email: $email"); // Log for debugging
-        }
-    } else {
-        $login_error = "No user found with that email."; // No user message
-        error_log("No user found with email: $email"); // Log for debugging
-    }
-
-    $stmt->close(); // Close statement
-}
-
-// Fetch posts from the database if logged in
-$posts = [];
-if ($isLoggedIn) {
-    $result = $conn->query("SELECT posts.*, users.username FROM posts JOIN users ON posts.user_id = users.id ORDER BY created_at DESC");
-    if ($result->num_rows > 0) {
-        $posts = $result->fetch_all(MYSQLI_ASSOC);
-    }
-}
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -102,7 +47,7 @@ if ($isLoggedIn) {
             cursor: pointer; /* Pointer cursor on hover */
         }
         button[type="submit"] {
-            background-color: #90EE90; /* Muted light green for login button */
+            background-color: #90EE90; /* Light green for login button */
         }
         .create-post-button {
             background-color: #90EE90; /* Green for create post button */
@@ -110,8 +55,8 @@ if ($isLoggedIn) {
             padding: 10px 20px; /* Adjust padding */
         }
         .logout-button {
-            background-color: #FF4500; /* Red for logout button */
-            color: white; /* White text color */
+            background-color: #FF4500 !important; /* Red for logout button with !important to override other styles */
+            color: white !important; /* White text color with !important */
             width: auto; /* Make button auto-sized */
             padding: 10px 20px; /* Adjust padding */
             margin: 10px auto; /* Center the button */
@@ -166,6 +111,4 @@ if ($isLoggedIn) {
     <?php endif; ?>
 </body>
 </html>
-
-
 
