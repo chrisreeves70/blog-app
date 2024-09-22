@@ -34,6 +34,12 @@ if ($isLoggedIn) {
                 <p><?php echo htmlspecialchars($post['content']); ?></p>
             </div>
         <?php endforeach; ?>
+
+        <!-- Logout button -->
+        <form method="POST" action="logout.php">
+            <button type="submit">Logout</button>
+        </form>
+
     <?php else: ?>
         <!-- If user is not logged in, show login form and buttons -->
         <h1>Login to view posts</h1>
@@ -49,3 +55,4 @@ if ($isLoggedIn) {
     <?php endif; ?>
 </body>
 </html>
+
