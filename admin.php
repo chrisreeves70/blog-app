@@ -118,7 +118,7 @@ $result_posts = $conn->query($sql_posts);
     </table>
 
    
-    <a href="index.php">
+    <a href="logout.php">
         <button>Logout</button>
     </a>
 
