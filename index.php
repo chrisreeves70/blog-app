@@ -33,9 +33,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             exit();
         } else {
             $login_error = "Invalid password."; // Incorrect password message
+            error_log("Invalid password for email: $email"); // Log for debugging
         }
     } else {
         $login_error = "No user found with that email."; // No user message
+        error_log("No user found with email: $email"); // Log for debugging
     }
 
     $stmt->close(); // Close statement
@@ -68,6 +70,7 @@ if ($isLoggedIn) {
             border: 1px solid #ccc; /* Optional: add a border */
             padding: 10px; /* Optional: add padding */
             border-radius: 5px; /* Optional: round corners */
+            position: relative; /* Positioning for absolute elements */
         }
         .author {
             background-color: #007BFF; /* Blue background for author rectangle */
@@ -77,6 +80,9 @@ if ($isLoggedIn) {
             border: 1px solid black; /* Black border around the rectangle */
             display: inline-block; /* Inline block for rectangle */
             margin-bottom: 10px; /* Space below the author box */
+            position: absolute; /* Position at the top left */
+            top: 10px; /* Distance from top */
+            left: 10px; /* Distance from left */
         }
         form {
             margin: 20px auto; /* Center forms */
@@ -101,35 +107,36 @@ if ($isLoggedIn) {
         .small-button {
             width: 25%; /* Set a smaller width for the other buttons */
         }
+        .create-post-button {
+            background-color: #90EE90; /* Green for create post button */
+        }
+        .logout-button {
+            background-color: #FF4500; /* Red for logout button */
+        }
         .sign-up-button {
             background-color: #007BFF; /* Muted blue for sign-up button */
         }
         .admin-login-button {
             background-color: #FF4500; /* Muted red for admin login button */
         }
-        .create-post-button {
-            background-color: #FFD700; /* Gold color for create post button */
-            margin: 20px 0; /* Margin for spacing */
-        }
     </style>
 </head>
 <body>
     <?php if ($isLoggedIn): ?>
         <h1>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></h1>
-        <button class="small-button create-post-button" onclick="window.location.href='create_post.php'">Create a Post</button>
         <h2>Posts</h2>
         <?php foreach ($posts as $post): ?>
             <div class="post">
                 <!-- Author username displayed in a rectangle -->
                 <div class="author"><?php echo htmlspecialchars($post['username']); ?></div>
                 <h3><?php echo htmlspecialchars($post['title']); ?></h3>
-                <p><?php echo htmlspecialchars($post['content']); ?></p>
+                <p style="text-align: center;"><?php echo htmlspecialchars($post['content']); ?></p>
             </div>
         <?php endforeach; ?>
 
         <!-- Logout button -->
         <form method="POST" action="logout.php">
-            <button type="submit">Logout</button>
+            <button type="submit" class="logout-button">Logout</button>
         </form>
 
     <?php else: ?>
