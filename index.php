@@ -111,7 +111,7 @@ if ($isLoggedIn) {
         }
         .logout-button {
             background-color: #FF4500 !important; /* Red for logout button with !important to override other styles */
-            color: white !important; /* White text color with !important */
+            color: black !important; /* Wh color with !important */
             width: auto; /* Make button auto-sized */
             padding: 10px 20px; /* Adjust padding */
             margin: 10px auto; /* Center the button */
