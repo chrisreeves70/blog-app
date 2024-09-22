@@ -76,8 +76,23 @@ if ($isLoggedIn) {
             margin: 10px 0; /* Margin for spacing */
             padding: 10px; /* Padding for better touch targets */
         }
+        button {
+            border: none; /* Remove default button border */
+            color: white; /* Text color */
+            cursor: pointer; /* Pointer cursor on hover */
+            border-radius: 5px; /* Round corners */
+        }
+        button[type="submit"] {
+            background-color: lightgreen; /* Light green for login button */
+        }
         .small-button {
             width: 25%; /* Set a smaller width for the other buttons */
+        }
+        .sign-up-button {
+            background-color: blue; /* Blue for sign-up button */
+        }
+        .admin-login-button {
+            background-color: red; /* Red for admin login button */
         }
     </style>
 </head>
@@ -109,9 +124,10 @@ if ($isLoggedIn) {
         </form>
 
         <!-- Sign up and Admin login buttons -->
-        <button class="small-button" onclick="window.location.href='register.php'">Not a User? Sign Up</button>
-        <button class="small-button" onclick="window.location.href='admin_login.php'">Admin Login</button>
+        <button class="small-button sign-up-button" onclick="window.location.href='register.php'">Not a User? Sign Up</button>
+        <button class="small-button admin-login-button" onclick="window.location.href='admin_login.php'">Admin Login</button>
     <?php endif; ?>
 </body>
 </html>
+
 
