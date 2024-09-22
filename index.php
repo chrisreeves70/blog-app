@@ -36,7 +36,7 @@ if ($isLoggedIn) {
         <?php endforeach; ?>
 
         <!-- Logout button -->
-        <form method="POST" action="index.php">
+        <form method="POST" action="logout.php">
             <button type="submit">Logout</button>
         </form>
 
