@@ -55,13 +55,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             padding: 10px; /* Padding for better touch targets */
             border: 1px solid black; /* Black border */
             border-radius: 5px; /* Round corners */
-            background-color: #007BFF; /* Blue for the button */
             color: black; /* Black text color */
             cursor: pointer; /* Pointer cursor on hover */
             margin-top: 10px; /* Margin for spacing */
         }
+        .create-button {
+            background-color: #007BFF; /* Blue for the create button */
+        }
         .back-button {
             background-color: #90EE90; /* Light green for back button */
+            width: 25%; /* Match width of create button */
         }
     </style>
 </head>
@@ -77,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <textarea id="content" name="content" required></textarea>
 
         <!-- Submit button -->
-        <button type="submit">Create Post</button>
+        <button type="submit" class="create-button">Create Post</button>
     </form>
 
     <!-- Back to Home button -->
