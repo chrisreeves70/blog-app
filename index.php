@@ -76,6 +76,9 @@ if ($isLoggedIn) {
             margin: 10px 0; /* Margin for spacing */
             padding: 10px; /* Padding for better touch targets */
         }
+        .small-button {
+            width: 25%; /* Set a smaller width for the other buttons */
+        }
     </style>
 </head>
 <body>
@@ -106,8 +109,8 @@ if ($isLoggedIn) {
         </form>
 
         <!-- Sign up and Admin login buttons -->
-        <button onclick="window.location.href='register.php'">Not a User? Sign Up</button>
-        <button onclick="window.location.href='admin_login.php'">Admin Login</button>
+        <button class="small-button" onclick="window.location.href='register.php'">Not a User? Sign Up</button>
+        <button class="small-button" onclick="window.location.href='admin_login.php'">Admin Login</button>
     <?php endif; ?>
 </body>
 </html>
