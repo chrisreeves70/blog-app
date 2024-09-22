@@ -58,6 +58,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background-color: #007BFF; /* Blue for the button */
             color: black; /* Black text color */
             cursor: pointer; /* Pointer cursor on hover */
+            margin-top: 10px; /* Margin for spacing */
+        }
+        .back-button {
+            background-color: #90EE90; /* Light green for back button */
         }
     </style>
 </head>
@@ -76,6 +80,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="submit">Create Post</button>
     </form>
 
-    <button onclick="window.location.href='index.php'">Back to Home</button>
+    <!-- Back to Home button -->
+    <button class="back-button" onclick="window.location.href='index.php'">Back to Home</button>
 </body>
 </html>
+
