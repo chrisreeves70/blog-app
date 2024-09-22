@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: black; /* Black text */
         }
         .back-home-button {
-            background-color: white; /* White background for back to home button */
+            background-color: #007BFF ; /*background for back to home button */
             color: black; /* Black text */
         }
     </style>
