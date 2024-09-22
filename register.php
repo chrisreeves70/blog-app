@@ -43,6 +43,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" type="text/css" href="styles.css">
     <title>Register</title>
     <style>
+        body {
+            text-align: center; /* Center all text */
+        }
         form {
             width: 25%; /* Set the form width to 25% */
             margin: auto; /* Center the form */
@@ -66,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </form>
 
     <!-- Button to return to the homepage -->
-    <button onclick="window.location.href='index.php'">Back to Login</button>
+    <button onclick="window.location.href='index.php'" style="margin-top: 20px;">Back to Login</button>
 </body>
 </html>
 
