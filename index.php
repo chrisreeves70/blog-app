@@ -104,15 +104,17 @@ if ($isLoggedIn) {
         button[type="submit"] {
             background-color: #90EE90; /* Muted light green for login button */
         }
-        .small-button {
-            width: 25%; /* Set a smaller width for the other buttons */
-        }
         .create-post-button {
             background-color: #90EE90; /* Green for create post button */
         }
         .logout-button {
             background-color: #FF4500; /* Red for logout button */
             color: white; /* White text color */
+            width: 25%; /* Set a smaller width for the logout button */
+            padding: 10px; /* Add padding for better touch targets */
+            margin: 10px auto; /* Center logout button */
+            border: 1px solid black; /* Add black border */
+            border-radius: 5px; /* Round corners */
         }
         .sign-up-button {
             background-color: #007BFF; /* Muted blue for sign-up button */
@@ -125,7 +127,7 @@ if ($isLoggedIn) {
 <body>
     <?php if ($isLoggedIn): ?>
         <h1>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></h1>
-        <button class="small-button create-post-button" onclick="window.location.href='create_post.php'">Create Post</button>
+        <button class="create-post-button" onclick="window.location.href='create_post.php'">Create Post</button>
         <h2>Posts</h2>
         <?php foreach ($posts as $post): ?>
             <div class="post">
@@ -153,10 +155,11 @@ if ($isLoggedIn) {
         </form>
 
         <!-- Sign up and Admin login buttons -->
-        <button class="small-button sign-up-button" onclick="window.location.href='register.php'">Not a User? Sign Up</button>
-        <button class="small-button admin-login-button" onclick="window.location.href='admin_login.php'">Admin Login</button>
+        <button class="sign-up-button" onclick="window.location.href='register.php'">Not a User? Sign Up</button>
+        <button class="admin-login-button" onclick="window.location.href='admin_login.php'">Admin Login</button>
     <?php endif; ?>
 </body>
 </html>
+
 
 
