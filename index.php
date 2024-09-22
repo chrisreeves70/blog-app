@@ -75,24 +75,24 @@ if ($isLoggedIn) {
             width: 100%; /* Full width for inputs and buttons */
             margin: 10px 0; /* Margin for spacing */
             padding: 10px; /* Padding for better touch targets */
-        }
-        button {
-            border: none; /* Remove default button border */
-            color: white; /* Text color */
-            cursor: pointer; /* Pointer cursor on hover */
+            border: 1px solid black; /* Black border */
             border-radius: 5px; /* Round corners */
         }
+        button {
+            color: white; /* Text color */
+            cursor: pointer; /* Pointer cursor on hover */
+        }
         button[type="submit"] {
-            background-color: lightgreen; /* Light green for login button */
+            background-color: #90EE90; /* Muted light green for login button */
         }
         .small-button {
             width: 25%; /* Set a smaller width for the other buttons */
         }
         .sign-up-button {
-            background-color: blue; /* Blue for sign-up button */
+            background-color: #007BFF; /* Muted blue for sign-up button */
         }
         .admin-login-button {
-            background-color: red; /* Red for admin login button */
+            background-color: #FF4500; /* Muted red for admin login button */
         }
     </style>
 </head>
