@@ -112,6 +112,7 @@ if ($isLoggedIn) {
         }
         .logout-button {
             background-color: #FF4500; /* Red for logout button */
+            color: white; /* White text color */
         }
         .sign-up-button {
             background-color: #007BFF; /* Muted blue for sign-up button */
@@ -157,4 +158,5 @@ if ($isLoggedIn) {
     <?php endif; ?>
 </body>
 </html>
+
 
