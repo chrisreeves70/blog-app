@@ -1,57 +1,3 @@
-<?php
-session_start();
-require 'config.php'; // Include the database connection
-
-// Check if the user is logged in
-$isLoggedIn = isset($_SESSION['user_id']);
-
-// Handle login process if the form is submitted
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-
-    // Prepare and execute SQL statement to find user by email
-    $stmt = $conn->prepare("SELECT id, password, username FROM users WHERE email = ?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $stmt->store_result();
-
-    // Check if user exists
-    if ($stmt->num_rows > 0) {
-        $stmt->bind_result($id, $hashed_password, $username);
-        $stmt->fetch();
-
-        // Verify password
-        if (password_verify($password, $hashed_password)) {
-            $_SESSION['user_id'] = $id; // Store user ID in session
-            $_SESSION['username'] = $username; // Store username in session
-            header("Location: index.php"); // Redirect to self
-            exit();
-        } else {
-            $login_error = "Invalid password."; // Incorrect password message
-        }
-    } else {
-        $login_error = "No user found with that email."; // No user message
-    }
-
-    $stmt->close(); // Close statement
-}
-
-// Fetch posts from the database if logged in
-$posts = [];
-if ($isLoggedIn) {
-    $result = $conn->query("
-        SELECT posts.*, users.username 
-        FROM posts 
-        JOIN users ON posts.user_id = users.id 
-        ORDER BY posts.created_at DESC
-    ");
-    if ($result->num_rows > 0) {
-        $posts = $result->fetch_all(MYSQLI_ASSOC);
-    }
-}
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -69,6 +15,14 @@ if ($isLoggedIn) {
             border: 1px solid #ccc; /* Optional: add a border */
             padding: 10px; /* Optional: add padding */
             border-radius: 5px; /* Optional: round corners */
+        }
+        .author {
+            background-color: #007BFF; /* Blue background for author rectangle */
+            color: white; /* White text color */
+            padding: 5px; /* Padding for better appearance */
+            border-radius: 5px; /* Round corners */
+            display: inline-block; /* Inline block for rectangle */
+            margin-bottom: 10px; /* Space below the author box */
         }
         form {
             margin: 20px auto; /* Center forms */
@@ -107,9 +61,10 @@ if ($isLoggedIn) {
         <h2>Posts</h2>
         <?php foreach ($posts as $post): ?>
             <div class="post">
+                <!-- Author username displayed in a rectangle -->
+                <div class="author"><?php echo htmlspecialchars($post['username']); ?></div>
                 <h3><?php echo htmlspecialchars($post['title']); ?></h3>
                 <p><?php echo htmlspecialchars($post['content']); ?></p>
-                <p><strong>Author:</strong> <?php echo htmlspecialchars($post['username']); ?></p>
             </div>
         <?php endforeach; ?>
 
