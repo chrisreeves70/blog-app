@@ -65,6 +65,17 @@ if ($isLoggedIn) {
             padding: 10px; /* Optional: add padding */
             border-radius: 5px; /* Optional: round corners */
         }
+        form {
+            margin: 20px auto; /* Center forms */
+            width: 25%; /* Set form width */
+        }
+        input[type="email"],
+        input[type="password"],
+        button {
+            width: 100%; /* Full width for inputs and buttons */
+            margin: 10px 0; /* Margin for spacing */
+            padding: 10px; /* Padding for better touch targets */
+        }
     </style>
 </head>
 <body>
