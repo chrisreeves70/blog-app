@@ -1,6 +1,7 @@
 <?php
-// Start the session
 session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 // Check if the user is logged in as admin
 if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
@@ -21,12 +22,12 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Fetch users from the database
+// Fetch users
 $sql_users = "SELECT id, username, email FROM users";
 $result_users = $conn->query($sql_users);
 
-// Fetch posts from the database
-$sql_posts = "SELECT id, title, content FROM posts"; // Assuming you have a 'posts' table
+// Fetch posts
+$sql_posts = "SELECT id, title FROM posts"; // Adjust if you have a different column
 $result_posts = $conn->query($sql_posts);
 ?>
 
@@ -41,7 +42,7 @@ $result_posts = $conn->query($sql_posts);
     <h1>Admin Panel</h1>
 
     <h2>Manage Users</h2>
-    <?php if ($result_users->num_rows > 0): ?>
+    <?php if ($result_users && $result_users->num_rows > 0): ?>
         <table>
             <tr>
                 <th>ID</th>
@@ -55,9 +56,9 @@ $result_posts = $conn->query($sql_posts);
                     <td><?php echo $row['username']; ?></td>
                     <td><?php echo $row['email']; ?></td>
                     <td>
-                        <form action="delete_user.php" method="POST">
+                        <form action="delete_user.php" method="POST" style="display:inline;">
                             <input type="hidden" name="user_id" value="<?php echo $row['id']; ?>">
-                            <input type="submit" value="Delete">
+                            <button type="submit">Delete</button>
                         </form>
                     </td>
                 </tr>
@@ -68,7 +69,7 @@ $result_posts = $conn->query($sql_posts);
     <?php endif; ?>
 
     <h2>Manage Posts</h2>
-    <?php if ($result_posts->num_rows > 0): ?>
+    <?php if ($result_posts && $result_posts->num_rows > 0): ?>
         <table>
             <tr>
                 <th>ID</th>
@@ -80,9 +81,9 @@ $result_posts = $conn->query($sql_posts);
                     <td><?php echo $row['id']; ?></td>
                     <td><?php echo $row['title']; ?></td>
                     <td>
-                        <form action="delete_post.php" method="POST">
+                        <form action="delete_post.php" method="POST" style="display:inline;">
                             <input type="hidden" name="post_id" value="<?php echo $row['id']; ?>">
-                            <input type="submit" value="Delete">
+                            <button type="submit">Delete</button>
                         </form>
                     </td>
                 </tr>
@@ -92,11 +93,11 @@ $result_posts = $conn->query($sql_posts);
         <p>No posts found.</p>
     <?php endif; ?>
 
-    <p><a href="logout.php">Logout</a></p>
-
-    <?php
-    // Close the database connection
-    $conn->close();
-    ?>
+    <a href="index.php">Back to Homepage</a>
 </body>
 </html>
+
+<?php
+// Close the database connection
+$conn->close();
+?>
