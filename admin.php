@@ -21,7 +21,6 @@ if (isset($_POST['delete_user_id'])) {
 if (isset($_POST['delete_post_id'])) {
     $delete_post_id = $_POST['delete_post_id'];
     $sql_delete_post = "DELETE FROM posts WHERE id = ?";
-    $stmt = $conn->prepare($sql_delete_post);
     $stmt->bind_param("i", $delete_post_id);
     if ($stmt->execute()) {
         echo "Post deleted successfully!";
@@ -47,6 +46,17 @@ $result_posts = $conn->query($sql_posts);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
+    <script>
+        // JavaScript confirmation function for user deletion
+        function confirmDeleteUser() {
+            return confirm("Are you sure you want to delete this user?");
+        }
+
+        // JavaScript confirmation function for post deletion
+        function confirmDeletePost() {
+            return confirm("Are you sure you want to delete this post?");
+        }
+    </script>
 </head>
 <body>
     <h1>Admin Panel</h1>
@@ -66,7 +76,7 @@ $result_posts = $conn->query($sql_posts);
                         <td>" . $row['username'] . "</td>
                         <td>" . $row['email'] . "</td>
                         <td>
-                            <form method='POST' action='admin.php'>
+                            <form method='POST' action='admin.php' onsubmit='return confirmDeleteUser();'>
                                 <input type='hidden' name='delete_user_id' value='" . $row['id'] . "'>
                                 <input type='submit' value='Delete User'>
                             </form>
@@ -94,7 +104,7 @@ $result_posts = $conn->query($sql_posts);
                         <td>" . $row['title'] . "</td>
                         <td>" . $row['content'] . "</td>
                         <td>
-                            <form method='POST' action='admin.php'>
+                            <form method='POST' action='admin.php' onsubmit='return confirmDeletePost();'>
                                 <input type='hidden' name='delete_post_id' value='" . $row['id'] . "'>
                                 <input type='submit' value='Delete Post'>
                             </form>
@@ -107,6 +117,11 @@ $result_posts = $conn->query($sql_posts);
         ?>
     </table>
 
+    <!-- Back to Home Button -->
+    <br><br>
+    <a href="index.php">
+        <button>Back to Home</button>
+    </a>
+
 </body>
 </html>
-
