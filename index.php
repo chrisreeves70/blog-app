@@ -71,6 +71,7 @@ if ($isLoggedIn) {
             padding: 10px; /* Optional: add padding */
             border-radius: 5px; /* Optional: round corners */
             position: relative; /* Positioning for absolute elements */
+            word-wrap: break-word; /* Ensure long titles wrap to the next line */
         }
         .author {
             background-color: #007BFF; /* Blue background for author rectangle */
@@ -83,6 +84,11 @@ if ($isLoggedIn) {
             position: absolute; /* Position at the top left */
             top: 10px; /* Distance from top */
             left: 10px; /* Distance from left */
+        }
+        .post h3 {
+            margin-left: 80px; /* Create space from the left so it doesn't overlap with the author box */
+            word-wrap: break-word; /* Break long words into the next line */
+            margin-top: 10px; /* Add top margin to give more space from the top */
         }
         form {
             margin: 20px auto; /* Center forms */
@@ -111,7 +117,7 @@ if ($isLoggedIn) {
         }
         .logout-button {
             background-color: #FF4500 !important; /* Red for logout button with !important to override other styles */
-            color: black !important; /* Wh color with !important */
+            color: black !important; /* Black color with !important */
             width: auto; /* Make button auto-sized */
             padding: 10px 20px; /* Adjust padding */
             margin: 10px auto; /* Center the button */
@@ -166,4 +172,5 @@ if ($isLoggedIn) {
     <?php endif; ?>
 </body>
 </html>
+
 
