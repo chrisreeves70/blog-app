@@ -1,43 +1,16 @@
 <?php
-// Include your database connection here
-include 'config.php';
+session_start();
+require 'config.php'; // Include the database connection
 
-// Delete a user if the delete_user_id is set
-if (isset($_POST['delete_user_id'])) {
-    $delete_user_id = $_POST['delete_user_id'];
-    $sql_delete_user = "DELETE FROM users WHERE id = ?";
-    $stmt = $conn->prepare($sql_delete_user);
-    $stmt->bind_param("i", $delete_user_id);
-    if ($stmt->execute()) {
-        echo "User deleted successfully!";
-        header("Location: admin.php"); // Redirect to refresh the page
-        exit;
-    } else {
-        echo "Error deleting user: " . $conn->error;
-    }
+// Check if admin is logged in
+if (!isset($_SESSION['admin_logged_in'])) {
+    header("Location: admin_login.php");
+    exit;
 }
 
-// Delete a post if the delete_post_id is set
-if (isset($_POST['delete_post_id'])) {
-    $delete_post_id = $_POST['delete_post_id'];
-    $sql_delete_post = "DELETE FROM posts WHERE id = ?";
-    $stmt->bind_param("i", $delete_post_id);
-    if ($stmt->execute()) {
-        echo "Post deleted successfully!";
-        header("Location: admin.php"); // Redirect to refresh the page
-        exit;
-    } else {
-        echo "Error deleting post: " . $conn->error;
-    }
-}
-
-// Fetch all users
-$sql_users = "SELECT * FROM users";
-$result_users = $conn->query($sql_users);
-
-// Fetch all posts
-$sql_posts = "SELECT * FROM posts";
-$result_posts = $conn->query($sql_posts);
+// Fetch users from the database
+$result = $conn->query("SELECT * FROM users");
+$users = $result->fetch_all(MYSQLI_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -46,86 +19,62 @@ $result_posts = $conn->query($sql_posts);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
-    <script>
-        // JavaScript confirmation function for user deletion
-        function confirmDeleteUser() {
-            return confirm("Are you sure you want to delete this user?");
-        }
-
-        // JavaScript confirmation function for post deletion
-        function confirmDeletePost() {
-            return confirm("Are you sure you want to delete this post?");
-        }
-    </script>
 </head>
 <body>
     <h1>Admin Panel</h1>
-
-    <!-- List of Users -->
     <h2>Manage Users</h2>
-    <table border="1">
+
+    <table>
         <tr>
+            <th>ID</th>
             <th>Username</th>
             <th>Email</th>
-            <th>Action</th>
+            <th>Actions</th>
         </tr>
-        <?php
-        if ($result_users->num_rows > 0) {
-            while ($row = $result_users->fetch_assoc()) {
-                echo "<tr>
-                        <td>" . $row['username'] . "</td>
-                        <td>" . $row['email'] . "</td>
-                        <td>
-                            <form method='POST' action='admin.php' onsubmit='return confirmDeleteUser();'>
-                                <input type='hidden' name='delete_user_id' value='" . $row['id'] . "'>
-                                <input type='submit' value='Delete User'>
-                            </form>
-                        </td>
-                      </tr>";
-            }
-        } else {
-            echo "<tr><td colspan='3'>No users found</td></tr>";
-        }
-        ?>
+        <?php foreach ($users as $user): ?>
+            <tr>
+                <td><?php echo htmlspecialchars($user['id']); ?></td>
+                <td><?php echo htmlspecialchars($user['username']); ?></td>
+                <td><?php echo htmlspecialchars($user['email']); ?></td>
+                <td>
+                    <form method="POST" action="delete_user.php">
+                        <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($user['id']); ?>">
+                        <button type="submit" onclick="return confirm('Are you sure you want to delete this user?');">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        <?php endforeach; ?>
     </table>
 
-    <!-- List of Posts -->
     <h2>Manage Posts</h2>
-    <table border="1">
+    <table>
         <tr>
+            <th>ID</th>
             <th>Title</th>
-            <th>Content</th>
-            <th>Action</th>
+            <th>Actions</th>
         </tr>
         <?php
-        if ($result_posts->num_rows > 0) {
-            while ($row = $result_posts->fetch_assoc()) {
-                echo "<tr>
-                        <td>" . $row['title'] . "</td>
-                        <td>" . $row['content'] . "</td>
-                        <td>
-                            <form method='POST' action='admin.php' onsubmit='return confirmDeletePost();'>
-                                <input type='hidden' name='delete_post_id' value='" . $row['id'] . "'>
-                                <input type='submit' value='Delete Post'>
-                            </form>
-                        </td>
-                      </tr>";
-            }
-        } else {
-            echo "<tr><td colspan='3'>No posts found</td></tr>";
-        }
-        ?>
+        $result = $conn->query("SELECT * FROM posts");
+        $posts = $result->fetch_all(MYSQLI_ASSOC);
+        foreach ($posts as $post): ?>
+            <tr>
+                <td><?php echo htmlspecialchars($post['id']); ?></td>
+                <td><?php echo htmlspecialchars($post['title']); ?></td>
+                <td>
+                    <form method="POST" action="delete_post.php">
+                        <input type="hidden" name="post_id" value="<?php echo htmlspecialchars($post['id']); ?>">
+                        <button type="submit" onclick="return confirm('Are you sure you want to delete this post?');">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        <?php endforeach; ?>
     </table>
 
-    <!-- Back to Main Page and Logout Buttons -->
-    <br><br>
-    <a href="index.php">
-        <button>Back to Main Page</button>
-    </a>
-    <a href="index.php">
-        <button>Logout</button>
-    </a>
-
+    <!-- Buttons to go back to the main page and logout -->
+    <button onclick="window.location.href='index.php'">Back to Main Page</button>
+    <form method="POST" action="logout.php" style="display:inline;">
+        <button type="submit">Logout</button>
+    </form>
 </body>
 </html>
 
