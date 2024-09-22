@@ -43,10 +43,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" type="text/css" href="styles.css">
     <title>Register</title>
     <style>
+        form {
+            width: 25%; /* Set the form width to 25% */
+            margin: auto; /* Center the form */
+        }
         form input {
             display: block; /* Stack inputs vertically */
             margin: 10px 0; /* Space between inputs */
-            width: 100%; /* Full width */
+            width: 100%; /* Full width of the form */
         }
     </style>
 </head>
@@ -65,3 +69,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <button onclick="window.location.href='index.php'">Back to Login</button>
 </body>
 </html>
+
