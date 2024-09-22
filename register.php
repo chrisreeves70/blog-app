@@ -5,15 +5,33 @@ require 'config.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'];
     $email = $_POST['email'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $confirm_email = $_POST['confirm_email'];
+    $password = $_POST['password'];
+    $confirm_password = $_POST['confirm_password'];
 
-    // Insert the new user into the database
-    $conn->query("INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$password')");
-    echo "Registration successful! Redirecting to login...";
+    // Check if email and password match
+    if ($email !== $confirm_email) {
+        echo "Emails do not match!";
+    } elseif ($password !== $confirm_password) {
+        echo "Passwords do not match!";
+    } else {
+        // Hash the password
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    // Redirect to login page after registration
-    header("Location: index.php");
-    exit();
+        // Insert the new user into the database
+        $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $username, $email, $hashed_password);
+        
+        if ($stmt->execute()) {
+            echo "Registration successful! Redirecting to login...";
+            header("Location: index.php");
+            exit();
+        } else {
+            echo "Error: " . $stmt->error; // Output any error
+        }
+        $stmt->close();
+    }
+    $conn->close(); // Close the database connection
 }
 ?>
 
@@ -30,7 +48,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form method="POST">
         <input type="text" name="username" placeholder="Username" required>
         <input type="email" name="email" placeholder="Email" required>
+        <input type="email" name="confirm_email" placeholder="Confirm Email" required>
         <input type="password" name="password" placeholder="Password" required>
+        <input type="password" name="confirm_password" placeholder="Confirm Password" required>
         <button type="submit">Register</button>
     </form>
 
