@@ -124,6 +124,7 @@ if ($isLoggedIn) {
 <body>
     <?php if ($isLoggedIn): ?>
         <h1>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></h1>
+        <button class="small-button create-post-button" onclick="window.location.href='create_post.php'">Create Post</button>
         <h2>Posts</h2>
         <?php foreach ($posts as $post): ?>
             <div class="post">
