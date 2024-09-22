@@ -33,11 +33,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             exit();
         } else {
             $login_error = "Invalid password."; // Incorrect password message
-            error_log("Invalid password for email: $email"); // Log for debugging
         }
     } else {
         $login_error = "No user found with that email."; // No user message
-        error_log("No user found with email: $email"); // Log for debugging
     }
 
     $stmt->close(); // Close statement
@@ -73,9 +71,10 @@ if ($isLoggedIn) {
         }
         .author {
             background-color: #007BFF; /* Blue background for author rectangle */
-            color: white; /* White text color */
+            color: black; /* Black text color */
             padding: 5px; /* Padding for better appearance */
             border-radius: 5px; /* Round corners */
+            border: 1px solid black; /* Black border around the rectangle */
             display: inline-block; /* Inline block for rectangle */
             margin-bottom: 10px; /* Space below the author box */
         }
@@ -108,11 +107,16 @@ if ($isLoggedIn) {
         .admin-login-button {
             background-color: #FF4500; /* Muted red for admin login button */
         }
+        .create-post-button {
+            background-color: #FFD700; /* Gold color for create post button */
+            margin: 20px 0; /* Margin for spacing */
+        }
     </style>
 </head>
 <body>
     <?php if ($isLoggedIn): ?>
         <h1>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></h1>
+        <button class="small-button create-post-button" onclick="window.location.href='create_post.php'">Create a Post</button>
         <h2>Posts</h2>
         <?php foreach ($posts as $post): ?>
             <div class="post">
