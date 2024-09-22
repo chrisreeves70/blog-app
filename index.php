@@ -40,7 +40,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
 // Fetch posts from the database if logged in
 $posts = [];
 if ($isLoggedIn) {
-    $result = $conn->query("SELECT * FROM posts ORDER BY created_at DESC");
+    $result = $conn->query("
+        SELECT posts.*, users.username 
+        FROM posts 
+        JOIN users ON posts.user_id = users.id 
+        ORDER BY posts.created_at DESC
+    ");
     if ($result->num_rows > 0) {
         $posts = $result->fetch_all(MYSQLI_ASSOC);
     }
@@ -100,14 +105,11 @@ if ($isLoggedIn) {
     <?php if ($isLoggedIn): ?>
         <h1>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></h1>
         <h2>Posts</h2>
-        
-        <!-- Create Post Button -->
-        <button class="small-button sign-up-button" onclick="window.location.href='create_post.php'">Create Post</button>
-
         <?php foreach ($posts as $post): ?>
             <div class="post">
                 <h3><?php echo htmlspecialchars($post['title']); ?></h3>
                 <p><?php echo htmlspecialchars($post['content']); ?></p>
+                <p><strong>Author:</strong> <?php echo htmlspecialchars($post['username']); ?></p>
             </div>
         <?php endforeach; ?>
 
@@ -133,6 +135,4 @@ if ($isLoggedIn) {
     <?php endif; ?>
 </body>
 </html>
-
-
 
