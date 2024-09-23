@@ -33,9 +33,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             exit();
         } else {
             $login_error = "Invalid password."; // Incorrect password message
+            error_log("Invalid password for email: $email"); // Log for debugging
         }
     } else {
         $login_error = "No user found with that email."; // No user message
+        error_log("No user found with email: $email"); // Log for debugging
     }
 
     $stmt->close(); // Close statement
@@ -48,19 +50,6 @@ if ($isLoggedIn) {
     if ($result->num_rows > 0) {
         $posts = $result->fetch_all(MYSQLI_ASSOC);
     }
-}
-
-// Handle comment submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
-    $postId = $_POST['post_id'];
-    $comment = $_POST['comment_text'];
-    $userId = $_SESSION['user_id'];
-
-    // Insert the comment into the database
-    $stmt = $conn->prepare("INSERT INTO comments (post_id, user_id, comment_text) VALUES (?, ?, ?)");
-    $stmt->bind_param("iis", $postId, $userId, $comment);
-    $stmt->execute();
-    $stmt->close();
 }
 ?>
 
@@ -150,41 +139,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
             justify-content: center;
             margin-top: 10px;
         }
-          .like-button {
-        background-color: red; /* Red for Like button */
-        color: black; /* Black text */
-        border: 1px solid black; /* Black border */
-        padding: 3px 5px; /* Smaller padding */
-        border-radius: 5px; /* Round corners */
-        margin-right: 5px; /* Space between buttons */
-        cursor: pointer; /* Pointer cursor on hover */
-        font-size: 10px; /* Smaller font size */
-    }
-    .comment-button {
-        background-color: #90EE90; /* Blue for Comment button */
-        color: black; /* Black text */
-        border: 1px solid black; /* Black border */
-        padding: 5px 10px; /* Original padding */
-        border-radius: 5px; /* Round corners */
-        cursor: pointer; /* Pointer cursor on hover */
-        font-size: 12px; /* Original font size */
-    }
-    .post-actions {
-        display: flex;
-        justify-content: center;
-        margin-top: 10px;
-    }
-</style>
-
-<!-- ... existing HTML ... -->
-
-<!-- Like and Comment buttons -->
-<div class="post-actions">
-    <button class="like-button">Like</button>
-    <button class="comment-button" onclick="window.location.href='comment.php?post_id=<?php echo $post['id']; ?>'">Comment</button>
-</div>
-        .comment-box {
-            margin-top: 10px; /* Space above comment input */
+        .like-button {
+            background-color: red; /* Red for Like button */
+            color: black; /* Black text */
+            border: 1px solid black; /* Black border */
+            padding: 3px 5px; /* Smaller padding */
+            border-radius: 5px; /* Round corners */
+            margin-right: 5px; /* Space between buttons */
+            cursor: pointer; /* Pointer cursor on hover */
+            font-size: 10px; /* Smaller font size */
+        }
+        .comment-button {
+            background-color: #90EE90; /* Blue for Comment button */
+            color: black; /* Black text */
+            border: 1px solid black; /* Black border */
+            padding: 5px 10px; /* Original padding */
+            border-radius: 5px; /* Round corners */
+            cursor: pointer; /* Pointer cursor on hover */
+            font-size: 12px; /* Original font size */
         }
     </style>
 </head>
@@ -195,22 +167,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
         <h2>Posts</h2>
         <?php foreach ($posts as $post): ?>
             <div class="post">
+                <!-- Author username displayed in a rectangle -->
                 <div class="author"><?php echo htmlspecialchars($post['username']); ?></div>
                 <h3><?php echo htmlspecialchars($post['title']); ?></h3>
                 <p style="text-align: center;"><?php echo htmlspecialchars($post['content']); ?></p>
 
-                <!-- Like button -->
+                <!-- Like and Comment buttons -->
                 <div class="post-actions">
                     <button class="like-button">Like</button>
-                </div>
-
-                <!-- Comment form -->
-                <div class="comment-box">
-                    <form method="POST">
-                        <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
-                        <input type="text" name="comment_text" placeholder="Add a comment..." required>
-                        <button type="submit" name="comment">Submit</button>
-                    </form>
+                    <button class="comment-button" onclick="window.location.href='comment.php?post_id=<?php echo $post['id']; ?>'">Comment</button>
                 </div>
             </div>
         <?php endforeach; ?>
@@ -231,6 +196,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
             <button type="submit" name="login">Login</button>
         </form>
 
+        <!-- Sign up and Admin login buttons -->
         <button class="sign-up-button" onclick="window.location.href='register.php'">Not a User? Sign Up</button>
         <button class="admin-login-button" onclick="window.location.href='admin_login.php'">Admin Login</button>
     <?php endif; ?>
