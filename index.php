@@ -43,12 +43,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     $stmt->close(); // Close statement
 }
 
+// Handle like functionality
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['like'])) {
+    $postId = $_POST['post_id'];
+
+    // Insert or update like count in the database
+    $stmt = $conn->prepare("INSERT INTO likes (post_id, user_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE post_id = post_id");
+    $stmt->bind_param("ii", $postId, $_SESSION['user_id']);
+    $stmt->execute();
+    $stmt->close();
+}
+
+// Handle comment functionality
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
+    $postId = $_POST['post_id'];
+    $comment = $_POST['comment_text'];
+
+    // Insert comment into the database
+    $stmt = $conn->prepare("INSERT INTO comments (post_id, user_id, comment) VALUES (?, ?, ?)");
+    $stmt->bind_param("iis", $postId, $_SESSION['user_id'], $comment);
+    $stmt->execute();
+    $stmt->close();
+}
+
 // Fetch posts from the database if logged in
 $posts = [];
 if ($isLoggedIn) {
-    $result = $conn->query("SELECT posts.*, users.username FROM posts JOIN users ON posts.user_id = users.id ORDER BY created_at DESC");
+    $result = $conn->query("SELECT posts.*, users.username, 
+        (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
+        FROM posts 
+        JOIN users ON posts.user_id = users.id 
+        ORDER BY created_at DESC");
     if ($result->num_rows > 0) {
         $posts = $result->fetch_all(MYSQLI_ASSOC);
+    }
+}
+
+// Fetch comments for each post
+$comments = [];
+if ($isLoggedIn) {
+    $commentResult = $conn->query("SELECT comments.*, users.username 
+        FROM comments 
+        JOIN users ON comments.user_id = users.id");
+    if ($commentResult->num_rows > 0) {
+        while ($row = $commentResult->fetch_assoc()) {
+            $comments[$row['post_id']][] = $row;
+        }
     }
 }
 ?>
@@ -62,99 +102,90 @@ if ($isLoggedIn) {
     <title>Multi-User Blog</title>
     <style>
         body {
-            background-color: #f5f5f5; /* Light background */
-            color: #333; /* Text color */
-            font-family: Arial, sans-serif;
-            text-align: center; /* Center all text */
+            text-align: center;
         }
         .post {
             margin: 20px auto;
-            width: 50%; /* Adjust width for better appearance */
-            background-color: white;
+            width: 25%;
             border: 1px solid #ccc;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+            padding: 10px;
+            border-radius: 5px;
             position: relative;
+            word-wrap: break-word;
         }
         .author {
             background-color: #007BFF;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 8px;
+            color: black;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid black;
+            display: inline-block;
+            margin-bottom: 10px;
             position: absolute;
             top: 10px;
             left: 10px;
-            font-weight: bold;
         }
         .post h3 {
             margin-left: 80px;
-            text-align: left; /* Align title to left */
-            color: #007BFF; /* Keep heading color consistent */
-        }
-        .post p {
-            text-align: left;
+            word-wrap: break-word;
+            margin-top: 10px;
         }
         form {
             margin: 20px auto;
-            width: 300px;
+            width: 25%;
         }
         input[type="email"],
         input[type="password"],
         button {
             width: 100%;
             margin: 10px 0;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid black;
+            border-radius: 5px;
         }
         button {
-            background-color: #007BFF;
-            color: white;
-            border: none;
+            color: black;
             cursor: pointer;
-            transition: background-color 0.3s;
         }
-        button[type="submit"]:hover {
-            background-color: #0056b3; /* Darker blue on hover */
+        button[type="submit"] {
+            background-color: #90EE90;
         }
         .create-post-button {
             background-color: #90EE90;
-            border: none;
-            cursor: pointer;
+            width: auto;
             padding: 10px 20px;
-            border-radius: 8px;
         }
         .logout-button {
-            background-color: #FF4500;
-            color: white;
+            background-color: #FF4500 !important;
+            color: black !important;
+            width: auto;
             padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            border-radius: 8px;
+            margin: 10px auto;
+            border: 1px solid black;
+            border-radius: 5px;
         }
         .sign-up-button {
             background-color: #007BFF;
-            color: white;
+            width: auto;
             padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
         }
         .admin-login-button {
             background-color: #FF4500;
-            color: white;
+            width: auto;
             padding: 10px 20px;
-            border-radius: 8px;
+        }
+        .like-button {
+            background-color: #FFD700;
+            padding: 5px 10px;
+            margin: 10px;
+            border-radius: 5px;
             cursor: pointer;
         }
-        .form-container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        h1, h2 {
-            color: #333;
+        .comment-form textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid black;
         }
     </style>
 </head>
@@ -168,6 +199,23 @@ if ($isLoggedIn) {
                 <div class="author"><?php echo htmlspecialchars($post['username']); ?></div>
                 <h3><?php echo htmlspecialchars($post['title']); ?></h3>
                 <p><?php echo htmlspecialchars($post['content']); ?></p>
+                <form method="POST">
+                    <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
+                    <button type="submit" name="like" class="like-button">
+                        Like (<?php echo $post['like_count']; ?>)
+                    </button>
+                </form>
+                <h4>Comments</h4>
+                <?php if (isset($comments[$post['id']])): ?>
+                    <?php foreach ($comments[$post['id']] as $comment): ?>
+                        <p><strong><?php echo htmlspecialchars($comment['username']); ?>:</strong> <?php echo htmlspecialchars($comment['comment']); ?></p>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+                <form method="POST" class="comment-form">
+                    <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
+                    <textarea name="comment_text" placeholder="Write a comment..." required></textarea>
+                    <button type="submit" name="comment">Comment</button>
+                </form>
             </div>
         <?php endforeach; ?>
 
@@ -180,17 +228,15 @@ if ($isLoggedIn) {
         <?php if (isset($login_error)): ?>
             <p style="color:red;"><?php echo $login_error; ?></p>
         <?php endif; ?>
-        <div class="form-container">
-            <form method="POST">
-                <input type="email" name="email" placeholder="Email" required>
-                <input type="password" name="password" placeholder="Password" required>
-                <button type="submit" name="login">Login</button>
-            </form>
-            <button class="sign-up-button" onclick="window.location.href='register.php'">Not a User? Sign Up</button>
-            <button class="admin-login-button" onclick="window.location.href='admin_login.php'">Admin Login</button>
-        </div>
+        <form method="POST">
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit" name="login">Login</button>
+        </form>
+
+        <button class="sign-up-button" onclick="window.location.href='register.php'">Not a User? Sign Up</button>
+        <button class="admin-login-button" onclick="window.location.href='admin_login.php'">Admin Login</button>
     <?php endif; ?>
 </body>
 </html>
-
 
