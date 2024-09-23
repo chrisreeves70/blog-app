@@ -52,9 +52,7 @@ if ($isLoggedIn) {
     }
 }
 ?>
-<?php
-// Existing PHP code...
-?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -92,6 +90,9 @@ if ($isLoggedIn) {
             margin-left: 80px; /* Create space from the left so it doesn't overlap with the author box */
             word-wrap: break-word; /* Break long words into the next line */
             margin-top: 10px; /* Add top margin to give more space from the top */
+        }
+        .post p {
+            padding-bottom: 30px; /* Add padding at the bottom to prevent overlap with like button */
         }
         form {
             margin: 20px auto; /* Center forms */
@@ -144,9 +145,9 @@ if ($isLoggedIn) {
             padding: 2px 4px; /* Reduced padding for size */
             border-radius: 5px; /* Round corners */
             cursor: pointer; /* Pointer cursor on hover */
-            font-size: 8px; /* Smaller font size */
+            font-size: 7px; /* Smaller font size */
             margin-top: 10px; /* Space above button */
-            width: 75px; /* Fixed width for the button */
+            width: 60px; /* Fixed width for the button */
             position: absolute; /* Position relative to the post */
             bottom: 10px; /* Distance from the bottom of the post */
             left: 10px; /* Distance from the left side */
