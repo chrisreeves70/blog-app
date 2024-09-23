@@ -43,52 +43,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     $stmt->close(); // Close statement
 }
 
-// Handle like functionality
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['like'])) {
-    $postId = $_POST['post_id'];
-
-    // Insert or update like count in the database
-    $stmt = $conn->prepare("INSERT INTO likes (post_id, user_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE post_id = post_id");
-    $stmt->bind_param("ii", $postId, $_SESSION['user_id']);
-    $stmt->execute();
-    $stmt->close();
-}
-
-// Handle comment functionality
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
-    $postId = $_POST['post_id'];
-    $comment = $_POST['comment_text'];
-
-    // Insert comment into the database
-    $stmt = $conn->prepare("INSERT INTO comments (post_id, user_id, comment) VALUES (?, ?, ?)");
-    $stmt->bind_param("iis", $postId, $_SESSION['user_id'], $comment);
-    $stmt->execute();
-    $stmt->close();
-}
-
 // Fetch posts from the database if logged in
 $posts = [];
 if ($isLoggedIn) {
-    $result = $conn->query("SELECT posts.*, users.username, 
-        (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
-        FROM posts 
-        JOIN users ON posts.user_id = users.id 
-        ORDER BY created_at DESC");
+    $result = $conn->query("SELECT posts.*, users.username FROM posts JOIN users ON posts.user_id = users.id ORDER BY created_at DESC");
     if ($result->num_rows > 0) {
         $posts = $result->fetch_all(MYSQLI_ASSOC);
-    }
-}
-
-// Fetch comments for each post
-$comments = [];
-if ($isLoggedIn) {
-    $commentResult = $conn->query("SELECT comments.*, users.username 
-        FROM comments 
-        JOIN users ON comments.user_id = users.id");
-    if ($commentResult->num_rows > 0) {
-        while ($row = $commentResult->fetch_assoc()) {
-            $comments[$row['post_id']][] = $row;
-        }
     }
 }
 ?>
@@ -102,90 +62,94 @@ if ($isLoggedIn) {
     <title>Multi-User Blog</title>
     <style>
         body {
-            text-align: center;
+            text-align: center; /* Center all text */
         }
         .post {
-            margin: 20px auto;
-            width: 25%;
-            border: 1px solid #ccc;
-            padding: 10px;
-            border-radius: 5px;
-            position: relative;
-            word-wrap: break-word;
+            margin: 20px auto; /* Center and add margin between posts */
+            width: 25%; /* Set post width */
+            border: 1px solid #ccc; /* Optional: add a border */
+            padding: 10px; /* Optional: add padding */
+            border-radius: 5px; /* Optional: round corners */
+            position: relative; /* Positioning for absolute elements */
+            word-wrap: break-word; /* Ensure long titles wrap to the next line */
         }
         .author {
-            background-color: #007BFF;
-            color: black;
-            padding: 5px;
-            border-radius: 5px;
-            border: 1px solid black;
-            display: inline-block;
-            margin-bottom: 10px;
-            position: absolute;
-            top: 10px;
-            left: 10px;
+            background-color: #007BFF; /* Blue background for author rectangle */
+            color: black; /* Black text color */
+            padding: 5px; /* Padding for better appearance */
+            border-radius: 5px; /* Round corners */
+            border: 1px solid black; /* Black border around the rectangle */
+            display: inline-block; /* Inline block for rectangle */
+            margin-bottom: 10px; /* Space below the author box */
+            position: absolute; /* Position at the top left */
+            top: 10px; /* Distance from top */
+            left: 10px; /* Distance from left */
         }
         .post h3 {
-            margin-left: 80px;
-            word-wrap: break-word;
-            margin-top: 10px;
+            margin-left: 80px; /* Create space from the left so it doesn't overlap with the author box */
+            word-wrap: break-word; /* Break long words into the next line */
+            margin-top: 10px; /* Add top margin to give more space from the top */
         }
         form {
-            margin: 20px auto;
-            width: 25%;
+            margin: 20px auto; /* Center forms */
+            width: 25%; /* Set form width */
         }
         input[type="email"],
         input[type="password"],
         button {
-            width: 100%;
-            margin: 10px 0;
-            padding: 10px;
-            border: 1px solid black;
-            border-radius: 5px;
+            width: 100%; /* Full width for inputs and buttons */
+            margin: 10px 0; /* Margin for spacing */
+            padding: 10px; /* Padding for better touch targets */
+            border: 1px solid black; /* Black border */
+            border-radius: 5px; /* Round corners */
         }
         button {
-            color: black;
-            cursor: pointer;
+            color: black; /* Black text color */
+            cursor: pointer; /* Pointer cursor on hover */
         }
         button[type="submit"] {
-            background-color: #90EE90;
+            background-color: #90EE90; /* Light green for login button */
         }
         .create-post-button {
-            background-color: #90EE90;
-            width: auto;
-            padding: 10px 20px;
+            background-color: #90EE90; /* Green for create post button */
+            width: auto; /* Make button auto-sized */
+            padding: 10px 20px; /* Adjust padding */
         }
         .logout-button {
-            background-color: #FF4500 !important;
-            color: black !important;
-            width: auto;
-            padding: 10px 20px;
-            margin: 10px auto;
-            border: 1px solid black;
-            border-radius: 5px;
+            background-color: #FF4500 !important; /* Red for logout button with !important to override other styles */
+            color: black !important; /* Black color with !important */
+            width: auto; /* Make button auto-sized */
+            padding: 10px 20px; /* Adjust padding */
+            margin: 10px auto; /* Center the button */
+            border: 1px solid black; /* Add black border */
+            border-radius: 5px; /* Round corners */
         }
         .sign-up-button {
-            background-color: #007BFF;
-            width: auto;
-            padding: 10px 20px;
+            background-color: #007BFF; /* Muted blue for sign-up button */
+            width: auto; /* Make button auto-sized */
+            padding: 10px 20px; /* Adjust padding */
         }
         .admin-login-button {
-            background-color: #FF4500;
-            width: auto;
-            padding: 10px 20px;
+            background-color: #FF4500; /* Muted red for admin login button */
+            width: auto; /* Make button auto-sized */
+            padding: 10px 20px; /* Adjust padding */
         }
-        .like-button {
-            background-color: #FFD700;
-            padding: 5px 10px;
-            margin: 10px;
+        .post-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .like-button, .comment-button {
+            background-color: #FF4500; /* Red for Like button */
+            color: white;
+            border: none;
+            padding: 10px 20px;
             border-radius: 5px;
+            margin-right: 10px;
             cursor: pointer;
         }
-        .comment-form textarea {
-            width: 100%;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid black;
+        .comment-button {
+            background-color: #007BFF; /* Blue for Comment button */
         }
     </style>
 </head>
@@ -196,29 +160,20 @@ if ($isLoggedIn) {
         <h2>Posts</h2>
         <?php foreach ($posts as $post): ?>
             <div class="post">
+                <!-- Author username displayed in a rectangle -->
                 <div class="author"><?php echo htmlspecialchars($post['username']); ?></div>
                 <h3><?php echo htmlspecialchars($post['title']); ?></h3>
-                <p><?php echo htmlspecialchars($post['content']); ?></p>
-                <form method="POST">
-                    <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
-                    <button type="submit" name="like" class="like-button">
-                        Like (<?php echo $post['like_count']; ?>)
-                    </button>
-                </form>
-                <h4>Comments</h4>
-                <?php if (isset($comments[$post['id']])): ?>
-                    <?php foreach ($comments[$post['id']] as $comment): ?>
-                        <p><strong><?php echo htmlspecialchars($comment['username']); ?>:</strong> <?php echo htmlspecialchars($comment['comment']); ?></p>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-                <form method="POST" class="comment-form">
-                    <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
-                    <textarea name="comment_text" placeholder="Write a comment..." required></textarea>
-                    <button type="submit" name="comment">Comment</button>
-                </form>
+                <p style="text-align: center;"><?php echo htmlspecialchars($post['content']); ?></p>
+
+                <!-- Like and Comment buttons -->
+                <div class="post-actions">
+                    <button class="like-button">Like</button>
+                    <button class="comment-button" onclick="window.location.href='comment.php?post_id=<?php echo $post['id']; ?>'">Comment</button>
+                </div>
             </div>
         <?php endforeach; ?>
 
+        <!-- Logout button -->
         <form method="POST" action="logout.php">
             <button type="submit" class="logout-button">Logout</button>
         </form>
@@ -234,6 +189,7 @@ if ($isLoggedIn) {
             <button type="submit" name="login">Login</button>
         </form>
 
+        <!-- Sign up and Admin login buttons -->
         <button class="sign-up-button" onclick="window.location.href='register.php'">Not a User? Sign Up</button>
         <button class="admin-login-button" onclick="window.location.href='admin_login.php'">Admin Login</button>
     <?php endif; ?>
