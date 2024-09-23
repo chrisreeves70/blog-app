@@ -33,11 +33,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             exit();
         } else {
             $login_error = "Invalid password."; // Incorrect password message
-            error_log("Invalid password for email: $email"); // Log for debugging
         }
     } else {
         $login_error = "No user found with that email."; // No user message
-        error_log("No user found with email: $email"); // Log for debugging
     }
 
     $stmt->close(); // Close statement
@@ -118,7 +116,7 @@ if ($isLoggedIn) {
             padding: 10px 20px; /* Adjust padding */
         }
         .logout-button {
-            background-color: #FF4500 !important; /* Red for logout button with !important to override other styles */
+            background-color: #FF4500 !important; /* Red for logout button */
             color: black !important; /* Black color with !important */
             width: auto; /* Make button auto-sized */
             padding: 10px 20px; /* Adjust padding */
@@ -170,26 +168,25 @@ if ($isLoggedIn) {
         <h2>Posts</h2>
         <?php foreach ($posts as $post): ?>
             <div class="post">
-                <!-- Author username displayed in a rectangle -->
                 <div class="author"><?php echo htmlspecialchars($post['username']); ?></div>
                 <h3><?php echo htmlspecialchars($post['title']); ?></h3>
                 <p style="text-align: center;"><?php echo htmlspecialchars($post['content']); ?></p>
 
-                <!-- Like button form -->
                 <form method="POST" action="like_post.php" style="display: inline;">
                     <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
                     <button type="submit" class="like-button">Like</button>
                 </form>
                 
-                <!-- Like counter positioned at the bottom right -->
                 <div class="like-counter"><?php echo htmlspecialchars($post['likes']); ?> Likes</div>
             </div>
         <?php endforeach; ?>
 
-        <!-- Logout button -->
         <form method="POST" action="logout.php">
             <button type="submit" class="logout-button">Logout</button>
         </form>
+
+        <!-- Admin login button -->
+        <button class="admin-login-button" onclick="window.location.href='admin_login.php'">Admin Login</button>
 
     <?php else: ?>
         <h1>Login to view posts</h1>
