@@ -55,6 +55,9 @@ if ($isLoggedIn) {
 <?php
 // Existing PHP code...
 ?>
+<?php
+// Existing PHP code...
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -145,9 +148,7 @@ if ($isLoggedIn) {
             border-radius: 5px; /* Round corners */
             cursor: pointer; /* Pointer cursor on hover */
             font-size: 8px; /* Smaller font size */
-            position: absolute; /* Positioning */
-            bottom: 10px; /* Distance from bottom */
-            left: 10px; /* Distance from left */
+            margin-top: 10px; /* Space above button */
         }
     </style>
 </head>
@@ -162,10 +163,9 @@ if ($isLoggedIn) {
                 <div class="author"><?php echo htmlspecialchars($post['username']); ?></div>
                 <h3><?php echo htmlspecialchars($post['title']); ?></h3>
                 <p style="text-align: center;"><?php echo htmlspecialchars($post['content']); ?></p>
-
-                <!-- Like button positioned outside the post box -->
-                <button class="like-button">Like</button>
             </div>
+            <!-- Like button positioned outside the post box -->
+            <button class="like-button" style="float: left;">Like</button>
         <?php endforeach; ?>
 
         <!-- Logout button -->
