@@ -73,70 +73,113 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
     <title>Multi-User Blog</title>
     <style>
         body {
-            text-align: center;
+            text-align: center; /* Center all text */
         }
         .post {
-            margin: 20px auto;
-            width: 25%;
-            border: 1px solid #ccc;
-            padding: 10px;
-            border-radius: 5px;
+            margin: 20px auto; /* Center and add margin between posts */
+            width: 25%; /* Set post width */
+            border: 1px solid #ccc; /* Optional: add a border */
+            padding: 10px; /* Optional: add padding */
+            border-radius: 5px; /* Optional: round corners */
+            position: relative; /* Positioning for absolute elements */
+            word-wrap: break-word; /* Ensure long titles wrap to the next line */
         }
         .author {
-            background-color: #007BFF;
-            color: black;
-            padding: 5px;
-            border-radius: 5px;
-            border: 1px solid black;
-            display: inline-block;
-            margin-bottom: 10px;
+            background-color: #007BFF; /* Blue background for author rectangle */
+            color: black; /* Black text color */
+            padding: 5px; /* Padding for better appearance */
+            border-radius: 5px; /* Round corners */
+            border: 1px solid black; /* Black border around the rectangle */
+            display: inline-block; /* Inline block for rectangle */
+            margin-bottom: 10px; /* Space below the author box */
+            position: absolute; /* Position at the top left */
+            top: 10px; /* Distance from top */
+            left: 10px; /* Distance from left */
         }
         .post h3 {
-            margin-left: 80px;
-            margin-top: 10px;
+            margin-left: 80px; /* Create space from the left so it doesn't overlap with the author box */
+            word-wrap: break-word; /* Break long words into the next line */
+            margin-top: 10px; /* Add top margin to give more space from the top */
+        }
+        form {
+            margin: 20px auto; /* Center forms */
+            width: 25%; /* Set form width */
         }
         input[type="email"],
         input[type="password"],
         button {
-            width: 100%;
-            margin: 10px 0;
-            padding: 10px;
-            border: 1px solid black;
-            border-radius: 5px;
+            width: 100%; /* Full width for inputs and buttons */
+            margin: 10px 0; /* Margin for spacing */
+            padding: 10px; /* Padding for better touch targets */
+            border: 1px solid black; /* Black border */
+            border-radius: 5px; /* Round corners */
         }
         button {
-            color: black;
-            cursor: pointer;
+            color: black; /* Black text color */
+            cursor: pointer; /* Pointer cursor on hover */
+        }
+        button[type="submit"] {
+            background-color: #90EE90; /* Light green for login button */
+        }
+        .create-post-button {
+            background-color: #90EE90; /* Green for create post button */
+            width: auto; /* Make button auto-sized */
+            padding: 10px 20px; /* Adjust padding */
+        }
+        .logout-button {
+            background-color: #FF4500 !important; /* Red for logout button with !important to override other styles */
+            color: black !important; /* Black color with !important */
+            width: auto; /* Make button auto-sized */
+            padding: 10px 20px; /* Adjust padding */
+            margin: 10px auto; /* Center the button */
+            border: 1px solid black; /* Add black border */
+            border-radius: 5px; /* Round corners */
+        }
+        .sign-up-button {
+            background-color: #007BFF; /* Muted blue for sign-up button */
+            width: auto; /* Make button auto-sized */
+            padding: 10px 20px; /* Adjust padding */
+        }
+        .admin-login-button {
+            background-color: #FF4500; /* Muted red for admin login button */
+            width: auto; /* Make button auto-sized */
+            padding: 10px 20px; /* Adjust padding */
+        }
+        .post-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
         }
         .like-button {
-            background-color: #FF4500;
-            color: black;
-            border: 1px solid black;
-            padding: 5px 10px;
-            border-radius: 5px;
-            margin-right: 10px;
-        }
-        .comment-button {
-            background-color: #007BFF;
+            background-color: red; /* Red for Like button */
+            color: black; /* Black text */
+            border: 1px solid black; /* Black border */
+            padding: 5px 10px; /* Smaller padding */
+            border-radius: 5px; /* Round corners */
+            margin-right: 10px; /* Space between buttons */
+            cursor: pointer; /* Pointer cursor on hover */
+            font-size: 12px; /* Smaller font size */
         }
         .comment-box {
-            margin-top: 10px;
+            margin-top: 10px; /* Space above comment input */
         }
     </style>
 </head>
 <body>
     <?php if ($isLoggedIn): ?>
         <h1>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></h1>
-        <button onclick="window.location.href='create_post.php'">Create Post</button>
+        <button class="create-post-button" onclick="window.location.href='create_post.php'">Create Post</button>
         <h2>Posts</h2>
         <?php foreach ($posts as $post): ?>
-            <div class="post" data-post-id="<?php echo $post['id']; ?>">
+            <div class="post">
                 <div class="author"><?php echo htmlspecialchars($post['username']); ?></div>
                 <h3><?php echo htmlspecialchars($post['title']); ?></h3>
-                <p><?php echo htmlspecialchars($post['content']); ?></p>
+                <p style="text-align: center;"><?php echo htmlspecialchars($post['content']); ?></p>
 
                 <!-- Like button -->
-                <button class="like-button">Like</button>
+                <div class="post-actions">
+                    <button class="like-button">Like</button>
+                </div>
 
                 <!-- Comment form -->
                 <div class="comment-box">
@@ -151,7 +194,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
 
         <!-- Logout button -->
         <form method="POST" action="logout.php">
-            <button type="submit">Logout</button>
+            <button type="submit" class="logout-button">Logout</button>
         </form>
 
     <?php else: ?>
@@ -164,8 +207,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit" name="login">Login</button>
         </form>
-        <button onclick="window.location.href='register.php'">Not a User? Sign Up</button>
-        <button onclick="window.location.href='admin_login.php'">Admin Login</button>
+
+        <button class="sign-up-button" onclick="window.location.href='register.php'">Not a User? Sign Up</button>
+        <button class="admin-login-button" onclick="window.location.href='admin_login.php'">Admin Login</button>
     <?php endif; ?>
 </body>
 </html>
+
