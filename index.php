@@ -205,27 +205,35 @@ if ($isLoggedIn) {
     <?php endif; ?>
 
     <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const likeButtons = document.querySelectorAll('.like-button');
+   document.addEventListener("DOMContentLoaded", function() {
+    const likeButtons = document.querySelectorAll('.like-button');
 
-        likeButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const postId = this.dataset.postId;
+    likeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const postId = this.dataset.postId;
 
-                // Send a request to like the post
-                fetch('like_post.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ post_id: postId })
-                })
-                .then(response => response.json())
-                
-                .catch(error => console.error('Error:', error));
-            });
+            // Send a request to like the post
+            fetch('like_post.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ post_id: postId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const likeCounter = this.nextElementSibling; // Get the like counter
+                    likeCounter.textContent = `${data.new_like_count} Likes`; // Update the counter
+                } else {
+                    console.error(data.error); // Log any errors
+                }
+            })
+            .catch(error => console.error('Error:', error));
         });
     });
+});
+
     </script>
 </body>
 </html>
