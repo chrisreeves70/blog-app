@@ -152,7 +152,7 @@ if ($isLoggedIn) {
         }
         .like-counter {
             background-color: red; /* Red background for the like counter */
-            color: black; /* Black text color */
+            color: grey; /* Black text color */
             border: 1px solid black; /* Black border */
             border-radius: 35px; /* Round bubble shape */
             padding: 5px 10px; /* Padding for the bubble */
