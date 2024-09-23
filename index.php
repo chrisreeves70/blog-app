@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
 // Fetch posts from the database if logged in
 $posts = [];
 if ($isLoggedIn) {
-    $result = $conn->query("SELECT posts.*, users.username FROM posts JOIN users ON posts.user_id = users.id ORDER BY created_at DESC");
+    $result = $conn->query("SELECT posts.*, users.username, COALESCE(likes.like_count, 0) AS like_count FROM posts LEFT JOIN (SELECT post_id, COUNT(*) AS like_count FROM likes GROUP BY post_id) AS likes ON posts.id = likes.post_id JOIN users ON posts.user_id = users.id ORDER BY created_at DESC");
     if ($result->num_rows > 0) {
         $posts = $result->fetch_all(MYSQLI_ASSOC);
     }
@@ -161,11 +161,6 @@ if ($isLoggedIn) {
             right: 10px; /* Distance from the right side */
             font-size: 10px; /* Font size for the counter */
         }
-        .post-counter {
-            margin: 20px 0; /* Spacing for the post counter */
-            font-size: 20px; /* Font size for the counter */
-            font-weight: bold; /* Bold font */
-        }
     </style>
 </head>
 <body>
@@ -173,10 +168,6 @@ if ($isLoggedIn) {
         <h1>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></h1>
         <button class="create-post-button" onclick="window.location.href='create_post.php'">Create Post</button>
         <h2>Posts</h2>
-
-        <!-- Display post counter -->
-        <div class="post-counter">Total Posts: <?php echo count($posts); ?></div>
-
         <?php foreach ($posts as $post): ?>
             <div class="post">
                 <!-- Author username displayed in a rectangle -->
@@ -188,7 +179,7 @@ if ($isLoggedIn) {
                 <button class="like-button">Like</button>
                 
                 <!-- Like counter positioned at the bottom right -->
-                <div class="like-counter">0 Likes</div>
+                <div class="like-counter"><?php echo $post['like_count']; ?> Likes</div>
             </div>
         <?php endforeach; ?>
 
@@ -207,7 +198,10 @@ if ($isLoggedIn) {
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit" name="login">Login</button>
         </form>
+
+        <!-- Sign up and Admin login buttons -->
+        <button class="sign-up-button" onclick="window.location.href='register.php'">Sign Up</button>
+        <button class="admin-login-button" onclick="window.location.href='admin_login.php'">Admin Login</button>
     <?php endif; ?>
 </body>
 </html>
-
