@@ -52,6 +52,9 @@ if ($isLoggedIn) {
     }
 }
 ?>
+<?php
+// Existing PHP code...
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -116,8 +119,8 @@ if ($isLoggedIn) {
             padding: 10px 20px; /* Adjust padding */
         }
         .logout-button {
-            background-color: #FF4500 !important; /* Red for logout button */
-            color: black !important; /* Black color */
+            background-color: #FF4500 !important; /* Red for logout button with !important to override other styles */
+            color: black !important; /* Black color with !important */
             width: auto; /* Make button auto-sized */
             padding: 10px 20px; /* Adjust padding */
             margin: 10px auto; /* Center the button */
@@ -138,11 +141,10 @@ if ($isLoggedIn) {
             background-color: red; /* Red for Like button */
             color: black; /* Black text */
             border: 1px solid black; /* Black border */
-            padding: 1px 2px; /* Smaller padding */
+            padding: 2px 4px; /* Reduced padding for size */
             border-radius: 5px; /* Round corners */
-            margin: 10px; /* Space around button */
             cursor: pointer; /* Pointer cursor on hover */
-            font-size: 10px; /* Smaller font size */
+            font-size: 8px; /* Smaller font size */
             position: absolute; /* Positioning */
             bottom: 10px; /* Distance from bottom */
             left: 10px; /* Distance from left */
@@ -161,7 +163,7 @@ if ($isLoggedIn) {
                 <h3><?php echo htmlspecialchars($post['title']); ?></h3>
                 <p style="text-align: center;"><?php echo htmlspecialchars($post['content']); ?></p>
 
-                <!-- Like button -->
+                <!-- Like button positioned outside the post box -->
                 <button class="like-button">Like</button>
             </div>
         <?php endforeach; ?>
