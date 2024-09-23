@@ -139,9 +139,9 @@ if ($isLoggedIn) {
             justify-content: center;
             margin-top: 10px;
         }
-        .like-button, .comment-button {
-            background-color: transparent; /* Transparent background */
-            color: black; /* Black text */
+        .like-button {
+            background-color: red; /* Red for Like button */
+            color: white; /* White text */
             border: 1px solid black; /* Black border */
             padding: 5px 10px; /* Smaller padding */
             border-radius: 5px; /* Round corners */
@@ -150,7 +150,13 @@ if ($isLoggedIn) {
             font-size: 12px; /* Smaller font size */
         }
         .comment-button {
-            background-color: transparent; /* Transparent background */
+            background-color: blue; /* Blue for Comment button */
+            color: white; /* White text */
+            border: 1px solid black; /* Black border */
+            padding: 5px 10px; /* Smaller padding */
+            border-radius: 5px; /* Round corners */
+            cursor: pointer; /* Pointer cursor on hover */
+            font-size: 12px; /* Smaller font size */
         }
     </style>
 </head>
