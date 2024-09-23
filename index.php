@@ -150,16 +150,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
             justify-content: center;
             margin-top: 10px;
         }
-        .like-button {
-            background-color: red; /* Red for Like button */
-            color: black; /* Black text */
-            border: 1px solid black; /* Black border */
-            padding: 5px 10px; /* Smaller padding */
-            border-radius: 5px; /* Round corners */
-            margin-right: 10px; /* Space between buttons */
-            cursor: pointer; /* Pointer cursor on hover */
-            font-size: 12px; /* Smaller font size */
-        }
+          .like-button {
+        background-color: red; /* Red for Like button */
+        color: black; /* Black text */
+        border: 1px solid black; /* Black border */
+        padding: 3px 5px; /* Smaller padding */
+        border-radius: 5px; /* Round corners */
+        margin-right: 5px; /* Space between buttons */
+        cursor: pointer; /* Pointer cursor on hover */
+        font-size: 10px; /* Smaller font size */
+    }
+    .comment-button {
+        background-color: #90EE90; /* Blue for Comment button */
+        color: black; /* Black text */
+        border: 1px solid black; /* Black border */
+        padding: 5px 10px; /* Original padding */
+        border-radius: 5px; /* Round corners */
+        cursor: pointer; /* Pointer cursor on hover */
+        font-size: 12px; /* Original font size */
+    }
+    .post-actions {
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
+    }
+</style>
+
+<!-- ... existing HTML ... -->
+
+<!-- Like and Comment buttons -->
+<div class="post-actions">
+    <button class="like-button">Like</button>
+    <button class="comment-button" onclick="window.location.href='comment.php?post_id=<?php echo $post['id']; ?>'">Comment</button>
+</div>
         .comment-box {
             margin-top: 10px; /* Space above comment input */
         }
