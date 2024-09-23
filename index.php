@@ -221,16 +221,7 @@ if ($isLoggedIn) {
                     body: JSON.stringify({ post_id: postId })
                 })
                 .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Update the like counter
-                        const likeCounter = this.nextElementSibling; // Assuming like counter is the next sibling
-                        likeCounter.textContent = `${data.new_like_count} Likes`;
-                        alert("You liked the post!");
-                    } else {
-                        alert("Error liking the post.");
-                    }
-                })
+                
                 .catch(error => console.error('Error:', error));
             });
         });
