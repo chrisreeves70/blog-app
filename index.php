@@ -116,8 +116,8 @@ if ($isLoggedIn) {
             padding: 10px 20px; /* Adjust padding */
         }
         .logout-button {
-            background-color: #FF4500 !important; /* Red for logout button with !important to override other styles */
-            color: black !important; /* Black color with !important */
+            background-color: #FF4500 !important; /* Red for logout button */
+            color: black !important; /* Black color */
             width: auto; /* Make button auto-sized */
             padding: 10px 20px; /* Adjust padding */
             margin: 10px auto; /* Center the button */
@@ -134,20 +134,18 @@ if ($isLoggedIn) {
             width: auto; /* Make button auto-sized */
             padding: 10px 20px; /* Adjust padding */
         }
-        .post-actions {
-            display: flex;
-            justify-content: center;
-            margin-top: 10px;
-        }
         .like-button {
             background-color: red; /* Red for Like button */
             color: black; /* Black text */
             border: 1px solid black; /* Black border */
-            padding: 3px 5px; /* Smaller padding */
+            padding: 1px 2px; /* Smaller padding */
             border-radius: 5px; /* Round corners */
-            margin-right: 5px; /* Space between buttons */
+            margin: 10px; /* Space around button */
             cursor: pointer; /* Pointer cursor on hover */
             font-size: 10px; /* Smaller font size */
+            position: absolute; /* Positioning */
+            bottom: 10px; /* Distance from bottom */
+            left: 10px; /* Distance from left */
         }
     </style>
 </head>
@@ -158,15 +156,17 @@ if ($isLoggedIn) {
         <h2>Posts</h2>
         <?php foreach ($posts as $post): ?>
             <div class="post">
+                <!-- Author username displayed in a rectangle -->
                 <div class="author"><?php echo htmlspecialchars($post['username']); ?></div>
                 <h3><?php echo htmlspecialchars($post['title']); ?></h3>
                 <p style="text-align: center;"><?php echo htmlspecialchars($post['content']); ?></p>
-                <div class="post-actions">
-                    <button class="like-button">Like</button>
-                </div>
+
+                <!-- Like button -->
+                <button class="like-button">Like</button>
             </div>
         <?php endforeach; ?>
 
+        <!-- Logout button -->
         <form method="POST" action="logout.php">
             <button type="submit" class="logout-button">Logout</button>
         </form>
@@ -181,6 +181,8 @@ if ($isLoggedIn) {
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit" name="login">Login</button>
         </form>
+
+        <!-- Sign up and Admin login buttons -->
         <button class="sign-up-button" onclick="window.location.href='register.php'">Not a User? Sign Up</button>
         <button class="admin-login-button" onclick="window.location.href='admin_login.php'">Admin Login</button>
     <?php endif; ?>
