@@ -51,39 +51,6 @@ if ($isLoggedIn) {
         $posts = $result->fetch_all(MYSQLI_ASSOC);
     }
 }
-
-// Handle 'like' functionality
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['like_post_id'])) {
-    $post_id = $_POST['like_post_id'];
-    // Increment the like count in the database
-    $conn->query("UPDATE posts SET likes = likes + 1 WHERE id = $post_id");
-    header("Location: index.php"); // Refresh to update like count
-    exit();
-}
-
-// Fetch comments for each post
-$comments = [];
-if ($isLoggedIn) {
-    foreach ($posts as $post) {
-        $post_id = $post['id'];
-        $result = $conn->query("SELECT * FROM comments WHERE post_id = $post_id ORDER BY created_at DESC");
-        $comments[$post_id] = $result->fetch_all(MYSQLI_ASSOC);
-    }
-}
-
-// Handle comment submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_post_id'])) {
-    $post_id = $_POST['comment_post_id'];
-    $comment_content = $_POST['comment'];
-    $user_id = $_SESSION['user_id'];
-    
-    // Insert the comment into the database
-    $stmt = $conn->prepare("INSERT INTO comments (post_id, user_id, content, created_at) VALUES (?, ?, ?, NOW())");
-    $stmt->bind_param("iis", $post_id, $user_id, $comment_content);
-    $stmt->execute();
-    header("Location: index.php"); // Refresh to show the new comment
-    exit();
-}
 ?>
 
 <!DOCTYPE html>
@@ -95,50 +62,99 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_post_id'])) {
     <title>Multi-User Blog</title>
     <style>
         body {
-            text-align: center;
+            background-color: #f5f5f5; /* Light background */
+            color: #333; /* Text color */
+            font-family: Arial, sans-serif;
+            text-align: center; /* Center all text */
         }
         .post {
             margin: 20px auto;
-            width: 25%;
+            width: 50%; /* Adjust width for better appearance */
+            background-color: white;
             border: 1px solid #ccc;
-            padding: 10px;
-            border-radius: 5px;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
             position: relative;
-            word-wrap: break-word;
         }
         .author {
             background-color: #007BFF;
-            color: black;
-            padding: 5px;
-            border-radius: 5px;
-            border: 1px solid black;
-            display: inline-block;
-            margin-bottom: 10px;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 8px;
             position: absolute;
             top: 10px;
             left: 10px;
+            font-weight: bold;
         }
         .post h3 {
             margin-left: 80px;
-            word-wrap: break-word;
-            margin-top: 10px;
+            text-align: left; /* Align title to left */
+            color: #007BFF; /* Keep heading color consistent */
         }
-        .likes, .comments {
-            margin-top: 10px;
+        .post p {
             text-align: left;
         }
         form {
             margin: 20px auto;
-            width: 25%;
+            width: 300px;
+        }
+        input[type="email"],
+        input[type="password"],
+        button {
+            width: 100%;
+            margin: 10px 0;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button[type="submit"]:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+        .create-post-button {
+            background-color: #90EE90;
+            border: none;
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 8px;
         }
         .logout-button {
-            background-color: #FF4500 !important;
-            color: black !important;
-            width: auto;
+            background-color: #FF4500;
+            color: white;
             padding: 10px 20px;
-            margin: 10px auto;
-            border: 1px solid black;
-            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+        .sign-up-button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .admin-login-button {
+            background-color: #FF4500;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #333;
         }
     </style>
 </head>
@@ -152,29 +168,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_post_id'])) {
                 <div class="author"><?php echo htmlspecialchars($post['username']); ?></div>
                 <h3><?php echo htmlspecialchars($post['title']); ?></h3>
                 <p><?php echo htmlspecialchars($post['content']); ?></p>
-
-                <!-- Likes section -->
-                <div class="likes">
-                    <form method="POST">
-                        <input type="hidden" name="like_post_id" value="<?php echo $post['id']; ?>">
-                        <button type="submit">Like (<?php echo $post['likes']; ?>)</button>
-                    </form>
-                </div>
-
-                <!-- Comments section -->
-                <div class="comments">
-                    <h4>Comments</h4>
-                    <?php if (isset($comments[$post['id']])): ?>
-                        <?php foreach ($comments[$post['id']] as $comment): ?>
-                            <p><strong><?php echo htmlspecialchars($comment['user_id']); ?>:</strong> <?php echo htmlspecialchars($comment['content']); ?></p>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                    <form method="POST">
-                        <input type="hidden" name="comment_post_id" value="<?php echo $post['id']; ?>">
-                        <textarea name="comment" rows="2" placeholder="Add a comment"></textarea>
-                        <button type="submit">Comment</button>
-                    </form>
-                </div>
             </div>
         <?php endforeach; ?>
 
@@ -187,14 +180,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_post_id'])) {
         <?php if (isset($login_error)): ?>
             <p style="color:red;"><?php echo $login_error; ?></p>
         <?php endif; ?>
-        <form method="POST">
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <button type="submit" name="login">Login</button>
-        </form>
-        <button class="sign-up-button" onclick="window.location.href='register.php'">Not a User? Sign Up</button>
-        <button class="admin-login-button" onclick="window.location.href='admin_login.php'">Admin Login</button>
+        <div class="form-container">
+            <form method="POST">
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="password" name="password" placeholder="Password" required>
+                <button type="submit" name="login">Login</button>
+            </form>
+            <button class="sign-up-button" onclick="window.location.href='register.php'">Not a User? Sign Up</button>
+            <button class="admin-login-button" onclick="window.location.href='admin_login.php'">Admin Login</button>
+        </div>
     <?php endif; ?>
 </body>
 </html>
+
 
