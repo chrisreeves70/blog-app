@@ -1,40 +1,42 @@
 <?php
 session_start();
-require 'config.php'; // Include database connection
+require 'config.php';
 
-// Check if the request is a POST
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get the posted data
-    $data = json_decode(file_get_contents('php://input'), true);
-    $postId = $data['post_id'];
+header('Content-Type: application/json');
 
-    // Check if user is logged in
-    if (isset($_SESSION['user_id'])) {
-        $userId = $_SESSION['user_id'];
+// Check if the user is logged in
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(['success' => false, 'error' => 'User not logged in.']);
+    exit();
+}
 
-        // Insert like into the database
-        $stmt = $conn->prepare("INSERT INTO likes (user_id, post_id) VALUES (?, ?)");
-        $stmt->bind_param("ii", $userId, $postId);
+// Get the post ID from the request
+$data = json_decode(file_get_contents('php://input'), true);
+$post_id = $data['post_id'] ?? null;
 
-        if ($stmt->execute()) {
-            // Count the total likes for this post
-            $likeCountStmt = $conn->prepare("SELECT COUNT(*) FROM likes WHERE post_id = ?");
-            $likeCountStmt->bind_param("i", $postId);
-            $likeCountStmt->execute();
-            $likeCountStmt->bind_result($likeCount);
-            $likeCountStmt->fetch();
-
-            // Return success response
-            echo json_encode(['success' => true, 'new_like_count' => $likeCount]);
-        } else {
-            echo json_encode(['success' => false, 'error' => 'Could not like post.']);
-        }
-
+if ($post_id) {
+    // Check if the post exists
+    $stmt = $conn->prepare("SELECT likes FROM posts WHERE id = ?");
+    $stmt->bind_param("i", $post_id);
+    $stmt->execute();
+    $stmt->bind_result($likes);
+    $stmt->fetch();
+    
+    if ($likes !== null) {
+        // Increment like count
+        $new_likes = $likes + 1;
         $stmt->close();
+        
+        // Update the likes in the database
+        $stmt = $conn->prepare("UPDATE posts SET likes = ? WHERE id = ?");
+        $stmt->bind_param("ii", $new_likes, $post_id);
+        $stmt->execute();
+        
+        echo json_encode(['success' => true, 'new_like_count' => $new_likes]);
     } else {
-        echo json_encode(['success' => false, 'error' => 'User not logged in.']);
+        echo json_encode(['success' => false, 'error' => 'Post not found.']);
     }
 } else {
-    echo json_encode(['success' => false, 'error' => 'Invalid request method.']);
+    echo json_encode(['success' => false, 'error' => 'Invalid post ID.']);
 }
 ?>
