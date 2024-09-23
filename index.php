@@ -149,15 +149,6 @@ if ($isLoggedIn) {
             cursor: pointer; /* Pointer cursor on hover */
             font-size: 10px; /* Smaller font size */
         }
-        .comment-button {
-            background-color: #90EE90; /* Blue for Comment button */
-            color: black; /* Black text */
-            border: 1px solid black; /* Black border */
-            padding: 5px 10px; /* Original padding */
-            border-radius: 5px; /* Round corners */
-            cursor: pointer; /* Pointer cursor on hover */
-            font-size: 12px; /* Original font size */
-        }
     </style>
 </head>
 <body>
@@ -172,7 +163,6 @@ if ($isLoggedIn) {
                 <p style="text-align: center;"><?php echo htmlspecialchars($post['content']); ?></p>
                 <div class="post-actions">
                     <button class="like-button">Like</button>
-                    <button class="comment-button" onclick="window.location.href='comment.php?post_id=<?php echo $post['id']; ?>'">Comment</button>
                 </div>
             </div>
         <?php endforeach; ?>
