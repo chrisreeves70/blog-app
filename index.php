@@ -137,13 +137,13 @@ if ($isLoggedIn) {
             padding: 10px 20px; /* Adjust padding */
         }
         .like-button {
-            background-color: red; /* Red for Like button */
+            background-color: #90EE90; /* green for Like button */
             color: black; /* Black text */
             border: 1px solid black; /* Black border */
             padding: 2px 4px; /* Reduced padding for size */
             border-radius: 5px; /* Round corners */
             cursor: pointer; /* Pointer cursor on hover */
-            font-size: 7px; /* Smaller font size */
+            font-size: 9px; /* Smaller font size */
             margin-top: 10px; /* Space above button */
             width: 60px; /* Fixed width for the button */
             position: absolute; /* Position relative to the post */
@@ -154,12 +154,12 @@ if ($isLoggedIn) {
             background-color: red; /* Red background for the like counter */
             color: black; /* Black text color */
             border: 1px solid black; /* Black border */
-            border-radius: 50px; /* Round bubble shape */
+            border-radius: 35px; /* Round bubble shape */
             padding: 5px 10px; /* Padding for the bubble */
             position: absolute; /* Position relative to the post */
             bottom: 10px; /* Distance from the bottom */
             right: 10px; /* Distance from the right side */
-            font-size: 12px; /* Font size for the counter */
+            font-size: 9px; /* Font size for the counter */
         }
     </style>
 </head>
