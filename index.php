@@ -139,7 +139,7 @@ if ($isLoggedIn) {
             padding: 10px 20px; /* Adjust padding */
         }
         .like-button {
-            background-color: red; /* Red for Like button */
+            background-color: #90EE90; /* green for Like button */
             color: black; /* Black text */
             border: 1px solid black; /* Black border */
             padding: 2px 4px; /* Reduced padding for size */
