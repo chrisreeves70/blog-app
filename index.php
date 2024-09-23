@@ -175,11 +175,14 @@ if ($isLoggedIn) {
                 <h3><?php echo htmlspecialchars($post['title']); ?></h3>
                 <p style="text-align: center;"><?php echo htmlspecialchars($post['content']); ?></p>
 
-                <!-- Like button positioned outside the post box -->
-                <button class="like-button">Like</button>
+                <!-- Like button form -->
+                <form method="POST" action="like_post.php" style="display: inline;">
+                    <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
+                    <button type="submit" class="like-button">Like</button>
+                </form>
                 
                 <!-- Like counter positioned at the bottom right -->
-                <div class="like-counter">0 Likes</div>
+                <div class="like-counter"><?php echo htmlspecialchars($post['likes']); ?> Likes</div>
             </div>
         <?php endforeach; ?>
 
@@ -194,14 +197,12 @@ if ($isLoggedIn) {
             <p style="color:red;"><?php echo $login_error; ?></p>
         <?php endif; ?>
         <form method="POST">
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="password" name="password" placeholder="Password" required>
+            <input type="email" name="email" required placeholder="Email">
+            <input type="password" name="password" required placeholder="Password">
             <button type="submit" name="login">Login</button>
         </form>
-
-        <!-- Sign up and Admin login buttons -->
-        <button class="sign-up-button" onclick="window.location.href='register.php'">Not a User? Sign Up</button>
-        <button class="admin-login-button" onclick="window.location.href='admin_login.php'">Admin Login</button>
+        <button class="sign-up-button" onclick="window.location.href='signup.php'">Sign Up</button>
     <?php endif; ?>
 </body>
 </html>
+
