@@ -141,7 +141,7 @@ if ($isLoggedIn) {
         }
         .like-button {
             background-color: red; /* Red for Like button */
-            color: white; /* White text */
+            color: black; /* Black text */
             border: 1px solid black; /* Black border */
             padding: 5px 10px; /* Smaller padding */
             border-radius: 5px; /* Round corners */
@@ -151,7 +151,7 @@ if ($isLoggedIn) {
         }
         .comment-button {
             background-color: blue; /* Blue for Comment button */
-            color: white; /* White text */
+            color: black; /* Black text */
             border: 1px solid black; /* Black border */
             padding: 5px 10px; /* Smaller padding */
             border-radius: 5px; /* Round corners */
@@ -202,4 +202,6 @@ if ($isLoggedIn) {
     <?php endif; ?>
 </body>
 </html>
+
+
 
