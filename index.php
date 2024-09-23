@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
 // Fetch posts from the database if logged in
 $posts = [];
 if ($isLoggedIn) {
-    $result = $conn->query("SELECT posts.*, users.username, COALESCE(likes.like_count, 0) AS like_count FROM posts LEFT JOIN (SELECT post_id, COUNT(*) AS like_count FROM likes GROUP BY post_id) AS likes ON posts.id = likes.post_id JOIN users ON posts.user_id = users.id ORDER BY created_at DESC");
+    $result = $conn->query("SELECT posts.*, users.username FROM posts JOIN users ON posts.user_id = users.id ORDER BY created_at DESC");
     if ($result->num_rows > 0) {
         $posts = $result->fetch_all(MYSQLI_ASSOC);
     }
@@ -137,7 +137,7 @@ if ($isLoggedIn) {
             padding: 10px 20px; /* Adjust padding */
         }
         .like-button {
-            background-color: #90EE90; /* green for Like button */
+            background-color: #90EE90; /* Green for Like button */
             color: black; /* Black text */
             border: 1px solid black; /* Black border */
             padding: 2px 4px; /* Reduced padding for size */
@@ -175,11 +175,11 @@ if ($isLoggedIn) {
                 <h3><?php echo htmlspecialchars($post['title']); ?></h3>
                 <p style="text-align: center;"><?php echo htmlspecialchars($post['content']); ?></p>
 
-                <!-- Like button positioned outside the post box -->
-                <button class="like-button">Like</button>
+                <!-- Like button with post ID -->
+                <button class="like-button" data-post-id="<?php echo $post['id']; ?>">Like</button>
                 
                 <!-- Like counter positioned at the bottom right -->
-                <div class="like-counter"><?php echo $post['like_count']; ?> Likes</div>
+                <div class="like-counter">0 Likes</div>
             </div>
         <?php endforeach; ?>
 
@@ -200,8 +200,41 @@ if ($isLoggedIn) {
         </form>
 
         <!-- Sign up and Admin login buttons -->
-        <button class="sign-up-button" onclick="window.location.href='register.php'">Sign Up</button>
+        <button class="sign-up-button" onclick="window.location.href='register.php'">Not a User? Sign Up</button>
         <button class="admin-login-button" onclick="window.location.href='admin_login.php'">Admin Login</button>
     <?php endif; ?>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const likeButtons = document.querySelectorAll('.like-button');
+
+        likeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const postId = this.dataset.postId;
+
+                // Send a request to like the post
+                fetch('like_post.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ post_id: postId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the like counter
+                        const likeCounter = this.nextElementSibling; // Assuming like counter is the next sibling
+                        likeCounter.textContent = `${data.new_like_count} Likes`;
+                        alert("You liked the post!");
+                    } else {
+                        alert("Error liking the post.");
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+    });
+    </script>
 </body>
 </html>
