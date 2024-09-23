@@ -150,7 +150,7 @@ if ($isLoggedIn) {
             font-size: 12px; /* Smaller font size */
         }
         .comment-button {
-            background-color: blue; /* Blue for Comment button */
+            background-color: #90EE90; /* Blue for Comment button */
             color: black; /* Black text */
             border: 1px solid black; /* Black border */
             padding: 5px 10px; /* Smaller padding */
