@@ -145,7 +145,7 @@ if ($isLoggedIn) {
             padding: 2px 4px; /* Reduced padding for size */
             border-radius: 5px; /* Round corners */
             cursor: pointer; /* Pointer cursor on hover */
-            font-size: 7px; /* Smaller font size */
+            font-size: 9px; /* Smaller font size */
             margin-top: 10px; /* Space above button */
             width: 60px; /* Fixed width for the button */
             position: absolute; /* Position relative to the post */
