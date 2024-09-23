@@ -159,7 +159,7 @@ if ($isLoggedIn) {
             position: absolute; /* Position relative to the post */
             bottom: 10px; /* Distance from the bottom */
             right: 10px; /* Distance from the right side */
-            font-size: 9px; /* Font size for the counter */
+            font-size: 11px; /* Font size for the counter */
         }
     </style>
 </head>
