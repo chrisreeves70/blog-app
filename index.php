@@ -139,9 +139,9 @@ if ($isLoggedIn) {
             justify-content: center;
             margin-top: 10px;
         }
-        .like-button {
-            background-color: red; /* Red for Like button */
-            color: black; /* Black text */
+        .like-button, .comment-button {
+            background-color: #FF4500; /* Red for Like button */
+            color: black; /* Black text color */
             border: 1px solid black; /* Black border */
             padding: 5px 10px; /* Smaller padding */
             border-radius: 5px; /* Round corners */
@@ -150,13 +150,7 @@ if ($isLoggedIn) {
             font-size: 12px; /* Smaller font size */
         }
         .comment-button {
-            background-color: #90EE90; /* Blue for Comment button */
-            color: black; /* Black text */
-            border: 1px solid black; /* Black border */
-            padding: 5px 10px; /* Smaller padding */
-            border-radius: 5px; /* Round corners */
-            cursor: pointer; /* Pointer cursor on hover */
-            font-size: 12px; /* Smaller font size */
+            background-color: #007BFF; /* Blue for Comment button */
         }
     </style>
 </head>
@@ -166,7 +160,7 @@ if ($isLoggedIn) {
         <button class="create-post-button" onclick="window.location.href='create_post.php'">Create Post</button>
         <h2>Posts</h2>
         <?php foreach ($posts as $post): ?>
-            <div class="post">
+            <div class="post" data-post-id="<?php echo $post['id']; ?>">
                 <!-- Author username displayed in a rectangle -->
                 <div class="author"><?php echo htmlspecialchars($post['username']); ?></div>
                 <h3><?php echo htmlspecialchars($post['title']); ?></h3>
@@ -175,7 +169,7 @@ if ($isLoggedIn) {
                 <!-- Like and Comment buttons -->
                 <div class="post-actions">
                     <button class="like-button">Like</button>
-                    <button class="comment-button" onclick="window.location.href='comment.php?post_id=<?php echo $post['id']; ?>'">Comment</button>
+                    <button class="comment-button">Comment</button>
                 </div>
             </div>
         <?php endforeach; ?>
@@ -200,6 +194,33 @@ if ($isLoggedIn) {
         <button class="sign-up-button" onclick="window.location.href='register.php'">Not a User? Sign Up</button>
         <button class="admin-login-button" onclick="window.location.href='admin_login.php'">Admin Login</button>
     <?php endif; ?>
+
+    <script>
+        document.querySelectorAll('.like-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const postId = this.closest('.post').dataset.postId; // Get the post ID
+                // Send an AJAX request to like the post
+                fetch(`like.php?post_id=${postId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Post liked!');
+                        } else {
+                            alert('Error liking post.');
+                        }
+                    });
+            });
+        });
+
+        document.querySelectorAll('.comment-button').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent the default behavior
+                const postId = this.closest('.post').dataset.postId; // Get the post ID
+                // Open a comment modal or display a comment input field here
+                alert(`Open comment box for post ID: ${postId}`);
+            });
+        });
+    </script>
 </body>
 </html>
 
