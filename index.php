@@ -140,16 +140,17 @@ if ($isLoggedIn) {
             margin-top: 10px;
         }
         .like-button, .comment-button {
-            background-color: #FF4500; /* Red for Like button */
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            margin-right: 10px;
-            cursor: pointer;
+            background-color: transparent; /* Transparent background */
+            color: black; /* Black text */
+            border: 1px solid black; /* Black border */
+            padding: 5px 10px; /* Smaller padding */
+            border-radius: 5px; /* Round corners */
+            margin-right: 10px; /* Space between buttons */
+            cursor: pointer; /* Pointer cursor on hover */
+            font-size: 12px; /* Smaller font size */
         }
         .comment-button {
-            background-color: #007BFF; /* Blue for Comment button */
+            background-color: transparent; /* Transparent background */
         }
     </style>
 </head>
