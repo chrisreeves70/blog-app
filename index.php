@@ -33,9 +33,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             exit();
         } else {
             $login_error = "Invalid password."; // Incorrect password message
+            error_log("Invalid password for email: $email"); // Log for debugging
         }
     } else {
         $login_error = "No user found with that email."; // No user message
+        error_log("No user found with email: $email"); // Log for debugging
     }
 
     $stmt->close(); // Close statement
@@ -46,22 +48,8 @@ $posts = [];
 if ($isLoggedIn) {
     $result = $conn->query("SELECT posts.*, users.username FROM posts JOIN users ON posts.user_id = users.id ORDER BY created_at DESC");
     if ($result->num_rows > 0) {
-        while ($post = $result->fetch_assoc()) {
-            // Fetch the like count for each post
-            $post['like_count'] = get_like_count($post['id'], $conn);
-            $posts[] = $post;
-        }
+        $posts = $result->fetch_all(MYSQLI_ASSOC);
     }
-}
-
-// Function to get the like count
-function get_like_count($post_id, $conn) {
-    $stmt = $conn->prepare("SELECT COUNT(*) FROM likes WHERE post_id = ?");
-    $stmt->bind_param("i", $post_id);
-    $stmt->execute();
-    $stmt->bind_result($count);
-    $stmt->fetch();
-    return $count;
 }
 ?>
 <!DOCTYPE html>
@@ -182,16 +170,24 @@ function get_like_count($post_id, $conn) {
         <h2>Posts</h2>
         <?php foreach ($posts as $post): ?>
             <div class="post">
+                <!-- Author username displayed in a rectangle -->
                 <div class="author"><?php echo htmlspecialchars($post['username']); ?></div>
                 <h3><?php echo htmlspecialchars($post['title']); ?></h3>
                 <p style="text-align: center;"><?php echo htmlspecialchars($post['content']); ?></p>
-                <div class="like-counter"><?php echo htmlspecialchars($post['like_count']); ?> Likes</div>
+
+                <!-- Like button with post ID -->
                 <button class="like-button" data-post-id="<?php echo $post['id']; ?>">Like</button>
+                
+                <!-- Like counter positioned at the bottom right -->
+                <div class="like-counter">0 Likes</div>
             </div>
         <?php endforeach; ?>
+
+        <!-- Logout button -->
         <form method="POST" action="logout.php">
             <button type="submit" class="logout-button">Logout</button>
         </form>
+
     <?php else: ?>
         <h1>Login to view posts</h1>
         <?php if (isset($login_error)): ?>
@@ -202,4 +198,42 @@ function get_like_count($post_id, $conn) {
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit" name="login">Login</button>
         </form>
-        <button class="sign-up
+
+        <!-- Sign up and Admin login buttons -->
+        <button class="sign-up-button" onclick="window.location.href='register.php'">Not a User? Sign Up</button>
+        <button class="admin-login-button" onclick="window.location.href='admin_login.php'">Admin Login</button>
+    <?php endif; ?>
+
+    <script>
+   document.addEventListener("DOMContentLoaded", function() {
+    const likeButtons = document.querySelectorAll('.like-button');
+
+    likeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const postId = this.dataset.postId;
+
+            // Send a request to like the post
+            fetch('like_post.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ post_id: postId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const likeCounter = this.nextElementSibling; // Get the like counter
+                    likeCounter.textContent = `${data.new_like_count} Likes`; // Update the counter
+                } else {
+                    console.error(data.error); // Log any errors
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    });
+});
+
+    </script>
+</body>
+</html>
