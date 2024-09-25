@@ -67,32 +67,32 @@ if ($isLoggedIn) {
             text-align: center; /* Center all text */
         }
         .post {
-    margin: 20px auto; /* Center and add margin between posts */
-    width: 22.5%; /* Set post width */
-    border: 1px solid #ccc; /* Optional: add a border */
-    padding: 9px; /* Optional: add padding */
-    border-radius: 5px; /* Optional: round corners */
-    position: relative; /* Positioning for absolute elements */
-    word-wrap: break-word; /* Ensure long titles wrap to the next line */
-}
+            margin: 20px auto; /* Center and add margin between posts */
+            width: 22.5%; /* Set post width */
+            border: 1px solid #ccc; /* Optional: add a border */
+            padding: 9px; /* Optional: add padding */
+            border-radius: 5px; /* Optional: round corners */
+            position: relative; /* Positioning for absolute elements */
+            word-wrap: break-word; /* Ensure long titles wrap to the next line */
+        }
 
-.author {
-    background-color: #007BFF; /* Blue background for author rectangle */
-    color: black; /* Black text color */
-    padding: 4.5px; /* Padding for better appearance */
-    border-radius: 5px; /* Round corners */
-    border: 1px solid black; /* Black border around the rectangle */
-    display: inline-block; /* Inline block for rectangle */
-    margin-bottom: 12px; /* Increased space below the author box */
-    position: absolute; /* Position at the top left */
-    top: 10px; /* Distance from top */
-    left: 10px; /* Distance from left */
-}
+        .author {
+            background-color: #007BFF; /* Blue background for author rectangle */
+            color: black; /* Black text color */
+            padding: 4.5px; /* Padding for better appearance */
+            border-radius: 5px; /* Round corners */
+            border: 1px solid black; /* Black border around the rectangle */
+            display: inline-block; /* Inline block for rectangle */
+            margin-bottom: 12px; /* Increased space below the author box */
+            position: absolute; /* Position at the top left */
+            top: 10px; /* Distance from top */
+            left: 10px; /* Distance from left */
+        }
 
-.post p {
-    padding: 9px 0; /* Padding on top and bottom for spacing */
-    margin: 45px 0 20px; /* Increased margin to create space from author box and bottom */
-}
+        .post p {
+            padding: 9px 0; /* Padding on top and bottom for spacing */
+            margin: 45px 0 20px; /* Increased margin to create space from author box and bottom */
+        }
 
         form {
             margin: 20px auto; /* Center forms */
@@ -242,8 +242,39 @@ if ($isLoggedIn) {
                 .catch(error => console.error('Error:', error));
             });
         });
+
+        // Handle comment submissions
+        const commentButtons = document.querySelectorAll('.comment-button');
+
+        commentButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const postId = this.parentElement.querySelector('.like-button').dataset.postId; // Get post ID
+                const commentInput = this.parentElement.querySelector('.comment-input'); // Get comment input
+                const commentText = commentInput.value; // Get comment text
+
+                if (commentText.trim()) {
+                    // Send a request to add a comment
+                    fetch('add_comment.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ post_id: postId, comment: commentText })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            commentInput.value = ''; // Clear input on success
+                            // Optionally, you can update the UI to show the new comment
+                        } else {
+                            console.error(data.error); // Log any errors
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                }
+            });
+        });
     });
     </script>
 </body>
 </html>
-
