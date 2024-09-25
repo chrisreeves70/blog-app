@@ -158,10 +158,12 @@ if ($isLoggedIn) {
             padding: 5px 10px; /* Padding for the bubble */
             display: inline-block; /* Inline block for the counter */
             margin: 5px; /* Space between counter and buttons */
-            float: right; /* Position to the right */
+            position: absolute; /* Positioning for absolute placement */
+            top: 10px; /* Distance from the top */
+            right: 10px; /* Distance from the right */
         }
         .button-container {
-            margin-top: 10px; /* Space above buttons */
+            margin-top: 30px; /* Space above buttons */
             display: flex; /* Use flexbox for alignment */
             justify-content: space-between; /* Space out buttons evenly */
         }
@@ -179,17 +181,17 @@ if ($isLoggedIn) {
                 <h3><?php echo htmlspecialchars($post['title']); ?></h3>
                 <p style="text-align: center;"><?php echo htmlspecialchars($post['content']); ?></p>
 
+                <!-- Like counter positioned at the top right -->
+                <div class="like-counter"><?php echo htmlspecialchars($post['like_count']); ?> Likes</div>
+
                 <div class="button-container">
                     <!-- Like button with post ID -->
                     <button class="like-button" data-post-id="<?php echo $post['id']; ?>">Like</button>
                     
                     <!-- Comment input field -->
                     <input type="text" class="comment-input" placeholder="Add a comment..." style="flex-grow: 1; margin: 0 5px;">
-                    <button class="comment-button">Post</button>
+                    <button class="comment-button">Post Comment</button>
                 </div>
-                
-                <!-- Like counter positioned at the bottom right, using the count from the database -->
-                <div class="like-counter"><?php echo htmlspecialchars($post['like_count']); ?> Likes</div>
             </div>
         <?php endforeach; ?>
 
@@ -233,7 +235,7 @@ if ($isLoggedIn) {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        const likeCounter = this.parentElement.nextElementSibling; // Get the like counter
+                        const likeCounter = this.closest('.post').querySelector('.like-counter'); // Get the like counter
                         likeCounter.textContent = `${data.new_like_count} Likes`; // Update the counter
                     } else {
                         console.error(data.error); // Log any errors
@@ -246,4 +248,3 @@ if ($isLoggedIn) {
     </script>
 </body>
 </html>
-
