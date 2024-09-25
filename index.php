@@ -52,6 +52,17 @@ if ($isLoggedIn) {
                              ORDER BY created_at DESC");
     if ($result->num_rows > 0) {
         $posts = $result->fetch_all(MYSQLI_ASSOC);
+        
+        // Fetch comments for each post
+        foreach ($posts as &$post) {
+            $post_id = $post['id'];
+            $comment_result = $conn->query("SELECT comments.*, users.username AS commenter_username 
+                                             FROM comments 
+                                             JOIN users ON comments.user_id = users.id 
+                                             WHERE comments.post_id = $post_id 
+                                             ORDER BY comments.created_at ASC");
+            $post['comments'] = $comment_result->fetch_all(MYSQLI_ASSOC);
+        }
     }
 }
 ?>
@@ -92,6 +103,14 @@ if ($isLoggedIn) {
         .post p {
             padding: 9px 0; /* Padding on top and bottom for spacing */
             margin: 45px 0 20px; /* Increased margin to create space from author box and bottom */
+        }
+
+        .comment {
+            margin-top: 10px; /* Space above comments */
+            padding: 5px; /* Padding for better appearance */
+            border: 1px solid #ccc; /* Border for comments */
+            border-radius: 5px; /* Round corners */
+            background-color: #f9f9f9; /* Light background for comments */
         }
 
         form {
@@ -186,31 +205,38 @@ if ($isLoggedIn) {
                     <button class="like-button" data-post-id="<?php echo $post['id']; ?>">Like</button>
                     
                     <!-- Comment input field -->
-                    <input type="text" class="comment-input" placeholder="Add a comment..." style="flex-grow: 1; margin: 0 4.5px;">
-                    <button class="comment-button">>>></button>
+                    <input type="text" class="comment-input" placeholder="Add a comment...">
+                    <button class="comment-button">Comment</button>
+                </div>
+
+                <!-- Display comments for the post -->
+                <div class="comments-section">
+                    <?php if (!empty($post['comments'])): ?>
+                        <?php foreach ($post['comments'] as $comment): ?>
+                            <div class="comment">
+                                <strong><?php echo htmlspecialchars($comment['commenter_username']); ?>:</strong>
+                                <span><?php echo htmlspecialchars($comment['comment']); ?></span>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
             </div>
         <?php endforeach; ?>
 
-        <!-- Logout button -->
-        <form method="POST" action="logout.php">
-            <button type="submit" class="logout-button">Logout</button>
+        <form method="post">
+            <button class="logout-button" type="submit" name="logout">Logout</button>
         </form>
-
     <?php else: ?>
-        <!-- Login form -->
-        <h2>Login to view posts</h2>
-        <form method="POST">
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="password" name="password" placeholder="Password" required>
+        <h1>Login</h1>
+        <?php if (isset($login_error)): ?>
+            <p><?php echo htmlspecialchars($login_error); ?></p>
+        <?php endif; ?>
+        <form method="post">
+            <input type="email" name="email" required placeholder="Email">
+            <input type="password" name="password" required placeholder="Password">
             <button type="submit" name="login">Login</button>
         </form>
-
-        <?php if (isset($login_error)): ?>
-            <p style="color: red;"><?php echo htmlspecialchars($login_error); ?></p>
-        <?php endif; ?>
-
-        <button class="sign-up-button" onclick="window.location.href='signup.php'">Sign Up</button>
+        <button class="sign-up-button" onclick="window.location.href='sign_up.php'">Sign Up</button>
         <button class="admin-login-button" onclick="window.location.href='admin_login.php'">Admin Login</button>
     <?php endif; ?>
 
@@ -266,6 +292,11 @@ if ($isLoggedIn) {
                         if (data.success) {
                             commentInput.value = ''; // Clear input on success
                             // Optionally, you can update the UI to show the new comment
+                            const commentsSection = this.parentElement.parentElement.querySelector('.comments-section'); // Get comments section
+                            const newComment = document.createElement('div'); // Create new comment element
+                            newComment.classList.add('comment'); // Add comment class
+                            newComment.innerHTML = `<strong>${data.commenter_username}:</strong> <span>${commentText}</span>`; // Set inner HTML
+                            commentsSection.appendChild(newComment); // Append new comment to the section
                         } else {
                             console.error(data.error); // Log any errors
                         }
