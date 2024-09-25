@@ -166,6 +166,23 @@ if ($isLoggedIn) {
             right: 10px; /* Distance from the right side */
             font-size: 10px; /* Font size for the counter */
         }
+        .comment-box {
+            margin-top: 10px; /* Space above comment box */
+            width: 100%; /* Full width */
+            padding: 5px; /* Padding for better touch targets */
+            border: 1px solid #ccc; /* Light border */
+            border-radius: 5px; /* Round corners */
+        }
+        .comments-section {
+            margin-top: 10px; /* Space above comments section */
+        }
+        .comment {
+            margin-top: 5px; /* Space between comments */
+            padding: 5px; /* Padding for better appearance */
+            border: 1px solid #eee; /* Light border */
+            border-radius: 5px; /* Round corners */
+            background-color: #f9f9f9; /* Light background color */
+        }
     </style>
 </head>
 <body>
@@ -185,6 +202,13 @@ if ($isLoggedIn) {
                 
                 <!-- Like counter positioned at the bottom right, using the count from the database -->
                 <div class="like-counter"><?php echo htmlspecialchars($post['like_count']); ?> Likes</div>
+
+                <!-- Comment section -->
+                <div class="comments-section">
+                    <textarea class="comment-box" placeholder="Write a comment..."></textarea>
+                    <button class="comment-button" data-post-id="<?php echo $post['id']; ?>">Comment</button>
+                    <div class="comments-list"></div>
+                </div>
             </div>
         <?php endforeach; ?>
 
@@ -212,7 +236,9 @@ if ($isLoggedIn) {
     <script>
     document.addEventListener("DOMContentLoaded", function() {
         const likeButtons = document.querySelectorAll('.like-button');
+        const commentButtons = document.querySelectorAll('.comment-button');
 
+        // Like button functionality
         likeButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const postId = this.dataset.postId;
@@ -237,7 +263,40 @@ if ($isLoggedIn) {
                 .catch(error => console.error('Error:', error));
             });
         });
+
+        // Comment button functionality
+        commentButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const postId = this.dataset.postId;
+                const commentBox = this.previousElementSibling; // Get the comment box
+                const commentText = commentBox.value;
+
+                // Send a request to post the comment
+                fetch('post_comment.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ post_id: postId, comment: commentText })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const commentsList = this.nextElementSibling; // Get the comments list
+                        const newComment = document.createElement('div');
+                        newComment.className = 'comment';
+                        newComment.textContent = commentText; // Add the new comment
+                        commentsList.appendChild(newComment); // Append to comments list
+                        commentBox.value = ''; // Clear the comment box
+                    } else {
+                        console.error(data.error); // Log any errors
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
     });
     </script>
 </body>
 </html>
+
