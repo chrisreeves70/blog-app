@@ -88,8 +88,8 @@ if ($isLoggedIn) {
             left: 10px; /* Distance from left */
         }
         .post p {
-            padding-bottom: 9px; /* Reduced padding at the bottom */
-            margin-bottom: 45px; /* Added margin to create space below the content */
+            padding-bottom: 9px; /* Padding at the bottom */
+            margin-bottom: 50px; /* Increased margin to create more space below the content */
         }
         form {
             margin: 20px auto; /* Center forms */
@@ -196,8 +196,8 @@ if ($isLoggedIn) {
 
     <?php else: ?>
         <!-- Login form -->
-        <h2>Login</h2>
-        <form method="POST" action="">
+        <h2>Login to view posts</h2>
+        <form method="POST">
             <input type="email" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit" name="login">Login</button>
@@ -210,6 +210,37 @@ if ($isLoggedIn) {
         <button class="sign-up-button" onclick="window.location.href='signup.php'">Sign Up</button>
         <button class="admin-login-button" onclick="window.location.href='admin_login.php'">Admin Login</button>
     <?php endif; ?>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const likeButtons = document.querySelectorAll('.like-button');
+
+        likeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const postId = this.dataset.postId;
+
+                // Send a request to like the post
+                fetch('like_post.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ post_id: postId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const likeCounter = this.parentElement.previousElementSibling; // Get the like counter
+                        likeCounter.textContent = `${data.new_like_count} Likes`; // Update the counter
+                    } else {
+                        console.error(data.error); // Log any errors
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+    });
+    </script>
 </body>
 </html>
 
