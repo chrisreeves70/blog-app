@@ -46,7 +46,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
 // Fetch posts from the database if logged in
 $posts = [];
 if ($isLoggedIn) {
-    $result = $conn->query("SELECT posts.*, users.username FROM posts JOIN users ON posts.user_id = users.id ORDER BY created_at DESC");
+    // Fetch posts along with like counts
+    $result = $conn->query("SELECT posts.*, users.username, 
+                                    (SELECT COUNT(*) FROM post_likes WHERE post_id = posts.id) AS like_count 
+                             FROM posts 
+                             JOIN users ON posts.user_id = users.id 
+                             ORDER BY created_at DESC");
     if ($result->num_rows > 0) {
         $posts = $result->fetch_all(MYSQLI_ASSOC);
     }
@@ -178,8 +183,8 @@ if ($isLoggedIn) {
                 <!-- Like button with post ID -->
                 <button class="like-button" data-post-id="<?php echo $post['id']; ?>">Like</button>
                 
-                <!-- Like counter positioned at the bottom right -->
-                <div class="like-counter">0 Likes</div>
+                <!-- Like counter positioned at the bottom right, using the count from the database -->
+                <div class="like-counter"><?php echo htmlspecialchars($post['like_count']); ?> Likes</div>
             </div>
         <?php endforeach; ?>
 
@@ -205,35 +210,34 @@ if ($isLoggedIn) {
     <?php endif; ?>
 
     <script>
-   document.addEventListener("DOMContentLoaded", function() {
-    const likeButtons = document.querySelectorAll('.like-button');
+    document.addEventListener("DOMContentLoaded", function() {
+        const likeButtons = document.querySelectorAll('.like-button');
 
-    likeButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const postId = this.dataset.postId;
+        likeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const postId = this.dataset.postId;
 
-            // Send a request to like the post
-            fetch('like_post.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ post_id: postId })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const likeCounter = this.nextElementSibling; // Get the like counter
-                    likeCounter.textContent = `${data.new_like_count} Likes`; // Update the counter
-                } else {
-                    console.error(data.error); // Log any errors
-                }
-            })
-            .catch(error => console.error('Error:', error));
+                // Send a request to like the post
+                fetch('like_post.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ post_id: postId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const likeCounter = this.nextElementSibling; // Get the like counter
+                        likeCounter.textContent = `${data.new_like_count} Likes`; // Update the counter
+                    } else {
+                        console.error(data.error); // Log any errors
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
         });
     });
-});
-
     </script>
 </body>
 </html>
