@@ -70,9 +70,9 @@ if ($isLoggedIn) {
         }
         .post {
             margin: 20px auto; /* Center and add margin between posts */
-            width: 25%; /* Set post width */
+            width: 22.5%; /* Set post width to 90% of the original */
             border: 1px solid #ccc; /* Optional: add a border */
-            padding: 10px; /* Optional: add padding */
+            padding: 9px; /* Optional: add padding */
             border-radius: 5px; /* Optional: round corners */
             position: relative; /* Positioning for absolute elements */
             word-wrap: break-word; /* Ensure long titles wrap to the next line */
@@ -80,33 +80,33 @@ if ($isLoggedIn) {
         .author {
             background-color: #007BFF; /* Blue background for author rectangle */
             color: black; /* Black text color */
-            padding: 5px; /* Padding for better appearance */
+            padding: 4.5px; /* Padding for better appearance */
             border-radius: 5px; /* Round corners */
             border: 1px solid black; /* Black border around the rectangle */
             display: inline-block; /* Inline block for rectangle */
-            margin-bottom: 10px; /* Space below the author box */
+            margin-bottom: 9px; /* Space below the author box */
             position: absolute; /* Position at the top left */
             top: 10px; /* Distance from top */
             left: 10px; /* Distance from left */
         }
         .post h3 {
-            margin-left: 80px; /* Create space from the left so it doesn't overlap with the author box */
+            margin-left: 72px; /* Create space from the left so it doesn't overlap with the author box */
             word-wrap: break-word; /* Break long words into the next line */
-            margin-top: 10px; /* Add top margin to give more space from the top */
+            margin-top: 9px; /* Add top margin to give more space from the top */
         }
         .post p {
-            padding-bottom: 10px; /* Reduced padding at the bottom */
+            padding-bottom: 9px; /* Reduced padding at the bottom */
         }
         form {
             margin: 20px auto; /* Center forms */
-            width: 25%; /* Set form width */
+            width: 22.5%; /* Set form width */
         }
         input[type="email"],
         input[type="password"],
         button {
             width: 100%; /* Full width for inputs and buttons */
-            margin: 10px 0; /* Margin for spacing */
-            padding: 10px; /* Padding for better touch targets */
+            margin: 9px 0; /* Margin for spacing */
+            padding: 9px; /* Padding for better touch targets */
             border: 1px solid black; /* Black border */
             border-radius: 5px; /* Round corners */
         }
@@ -120,26 +120,26 @@ if ($isLoggedIn) {
         .create-post-button {
             background-color: #90EE90; /* Green for create post button */
             width: auto; /* Make button auto-sized */
-            padding: 10px 20px; /* Adjust padding */
+            padding: 9px 18px; /* Adjust padding */
         }
         .logout-button {
             background-color: #FF4500 !important; /* Red for logout button with !important to override other styles */
             color: black !important; /* Black color with !important */
             width: auto; /* Make button auto-sized */
-            padding: 10px 20px; /* Adjust padding */
-            margin: 10px auto; /* Center the button */
+            padding: 9px 18px; /* Adjust padding */
+            margin: 9px auto; /* Center the button */
             border: 1px solid black; /* Add black border */
             border-radius: 5px; /* Round corners */
         }
         .sign-up-button {
             background-color: #007BFF; /* Muted blue for sign-up button */
             width: auto; /* Make button auto-sized */
-            padding: 10px 20px; /* Adjust padding */
+            padding: 9px 18px; /* Adjust padding */
         }
         .admin-login-button {
             background-color: #FF4500; /* Muted red for admin login button */
             width: auto; /* Make button auto-sized */
-            padding: 10px 20px; /* Adjust padding */
+            padding: 9px 18px; /* Adjust padding */
         }
         .like-button, .comment-button {
             background-color: #90EE90; /* Green for buttons */
@@ -147,23 +147,23 @@ if ($isLoggedIn) {
             border: 1px solid black; /* Black border */
             border-radius: 5px; /* Round corners */
             cursor: pointer; /* Pointer cursor on hover */
-            padding: 5px 10px; /* Padding for buttons */
-            margin: 5px; /* Space between buttons */
+            padding: 4.5px 9px; /* Padding for buttons */
+            margin: 4.5px; /* Space between buttons */
         }
         .like-counter {
             background-color: #fadce0; /* Red background for the like counter */
             color: black; /* Black text color */
             border: 1px solid black; /* Black border */
             border-radius: 30px; /* Round bubble shape */
-            padding: 5px 10px; /* Padding for the bubble */
+            padding: 4.5px 9px; /* Padding for the bubble */
             display: inline-block; /* Inline block for the counter */
-            margin: 5px; /* Space between counter and buttons */
+            margin: 4.5px; /* Space between counter and buttons */
             position: absolute; /* Positioning for absolute placement */
             top: 10px; /* Distance from the top */
             right: 10px; /* Distance from the right */
         }
         .button-container {
-            margin-top: 30px; /* Space above buttons */
+            margin-top: 27px; /* Space above buttons */
             display: flex; /* Use flexbox for alignment */
             justify-content: space-between; /* Space out buttons evenly */
         }
@@ -189,8 +189,8 @@ if ($isLoggedIn) {
                     <button class="like-button" data-post-id="<?php echo $post['id']; ?>">Like</button>
                     
                     <!-- Comment input field -->
-                    <input type="text" class="comment-input" placeholder="Add a comment..." style="flex-grow: 1; margin: 0 5px;">
-                    <button class="comment-button">Post Comment</button>
+                    <input type="text" class="comment-input" placeholder="Add a comment..." style="flex-grow: 1; margin: 0 4.5px;">
+                    <button class="comment-button">Post</button>
                 </div>
             </div>
         <?php endforeach; ?>
@@ -203,9 +203,9 @@ if ($isLoggedIn) {
     <?php else: ?>
         <h1>Login to view posts</h1>
         <?php if (isset($login_error)): ?>
-            <p style="color:red;"><?php echo $login_error; ?></p>
+            <p style="color:red;"><?php echo $login_error; ?></p> <!-- Display login error -->
         <?php endif; ?>
-        <form method="POST">
+        <form method="POST" action="">
             <input type="email" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit" name="login">Login</button>
@@ -248,3 +248,4 @@ if ($isLoggedIn) {
     </script>
 </body>
 </html>
+
