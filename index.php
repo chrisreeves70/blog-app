@@ -67,30 +67,33 @@ if ($isLoggedIn) {
             text-align: center; /* Center all text */
         }
         .post {
-            margin: 20px auto; /* Center and add margin between posts */
-            width: 22.5%; /* Set post width */
-            border: 1px solid #ccc; /* Optional: add a border */
-            padding: 9px; /* Optional: add padding */
-            border-radius: 5px; /* Optional: round corners */
-            position: relative; /* Positioning for absolute elements */
-            word-wrap: break-word; /* Ensure long titles wrap to the next line */
-        }
-        .author {
-            background-color: #007BFF; /* Blue background for author rectangle */
-            color: black; /* Black text color */
-            padding: 4.5px; /* Padding for better appearance */
-            border-radius: 5px; /* Round corners */
-            border: 1px solid black; /* Black border around the rectangle */
-            display: inline-block; /* Inline block for rectangle */
-            margin-bottom: 9px; /* Space below the author box */
-            position: absolute; /* Position at the top left */
-            top: 10px; /* Distance from top */
-            left: 10px; /* Distance from left */
-        }
-        .post p {
-            padding-bottom: 9px; /* Padding at the bottom */
-            margin-bottom: 50px; /* Increased margin to create more space below the content */
-        }
+    margin: 20px auto; /* Center and add margin between posts */
+    width: 22.5%; /* Set post width */
+    border: 1px solid #ccc; /* Optional: add a border */
+    padding: 9px; /* Optional: add padding */
+    border-radius: 5px; /* Optional: round corners */
+    position: relative; /* Positioning for absolute elements */
+    word-wrap: break-word; /* Ensure long titles wrap to the next line */
+}
+
+.author {
+    background-color: #007BFF; /* Blue background for author rectangle */
+    color: black; /* Black text color */
+    padding: 4.5px; /* Padding for better appearance */
+    border-radius: 5px; /* Round corners */
+    border: 1px solid black; /* Black border around the rectangle */
+    display: inline-block; /* Inline block for rectangle */
+    margin-bottom: 12px; /* Increased space below the author box */
+    position: absolute; /* Position at the top left */
+    top: 10px; /* Distance from top */
+    left: 10px; /* Distance from left */
+}
+
+.post p {
+    padding: 9px 0; /* Padding on top and bottom for spacing */
+    margin: 70px 0 20px; /* Increased margin to create space from author box and bottom */
+}
+
         form {
             margin: 20px auto; /* Center forms */
             width: 22.5%; /* Set form width */
