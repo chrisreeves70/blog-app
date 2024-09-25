@@ -5,6 +5,10 @@ $username = 'o9fkjfrbhuna7i61'; // JawsDB username
 $password = 'ehv2ecqmxp1cpjy6'; // JawsDB password
 $dbname = 'o0gsqsrnl17sb6rh'; // JawsDB database name
 
+// Set session cookie lifetime to 0 so it expires when the browser closes
+ini_set('session.cookie_lifetime', 0);
+session_start(); // Start the session
+
 // Create connection
 $conn = new mysqli($host, $username, $password, $dbname);
 
