@@ -95,7 +95,7 @@ if ($isLoggedIn) {
             margin-top: 10px; /* Add top margin to give more space from the top */
         }
         .post p {
-            padding-bottom: 30px; /* Add padding at the bottom to prevent overlap with buttons */
+            padding-bottom: 10px; /* Reduced padding at the bottom */
         }
         form {
             margin: 20px auto; /* Center forms */
@@ -117,10 +117,13 @@ if ($isLoggedIn) {
         button[type="submit"] {
             background-color: #90EE90; /* Light green for login button */
         }
-        .create-post-button {
-            background-color: #90EE90; /* Green for create post button */
+        .create-post-button,
+        .like-button,
+        .comment-button {
+            background-color: #90EE90; /* Green for create post and like buttons */
             width: auto; /* Make button auto-sized */
             padding: 10px 20px; /* Adjust padding */
+            margin: 5px; /* Margin for spacing */
         }
         .logout-button {
             background-color: #FF4500 !important; /* Red for logout button with !important to override other styles */
@@ -131,29 +134,12 @@ if ($isLoggedIn) {
             border: 1px solid black; /* Add black border */
             border-radius: 5px; /* Round corners */
         }
-        .sign-up-button {
-            background-color: #007BFF; /* Muted blue for sign-up button */
-            width: auto; /* Make button auto-sized */
-            padding: 10px 20px; /* Adjust padding */
-        }
+        .sign-up-button,
         .admin-login-button {
-            background-color: #FF4500; /* Muted red for admin login button */
+            background-color: #007BFF; /* Muted blue for sign-up and admin login buttons */
             width: auto; /* Make button auto-sized */
             padding: 10px 20px; /* Adjust padding */
-        }
-        .like-button {
-            background-color: #90EE90; /* Green for Like button */
-            color: black; /* Black text */
-            border: 1px solid black; /* Black border */
-            padding: 5px 10px; /* Padding for size */
-            border-radius: 5px; /* Round corners */
-            cursor: pointer; /* Pointer cursor on hover */
-            font-size: 12px; /* Standard font size */
-            margin-right: 10px; /* Space between buttons */
-            position: absolute; /* Position relative to the post */
-            bottom: 10px; /* Distance from the bottom */
-            left: 10px; /* Distance from the left side */
-            z-index: 1; /* Ensure button is above other elements */
+            margin: 5px; /* Margin for spacing */
         }
         .like-counter {
             background-color: #fadce0; /* Red background for the like counter */
@@ -166,27 +152,10 @@ if ($isLoggedIn) {
             right: 10px; /* Distance from the right side */
             font-size: 10px; /* Font size for the counter */
         }
-        .comments-section {
-            margin-top: 10px; /* Space above comments section */
-            text-align: left; /* Left align text in comments */
-            position: relative; /* Position for absolute elements */
-            margin-bottom: 40px; /* Additional space below comments section */
-        }
-        .comment-box {
-            width: 100%; /* Full width for comment box */
-            margin: 10px 0; /* Margin for spacing */
-            padding: 10px; /* Padding for better touch targets */
-            border: 1px solid black; /* Black border */
-            border-radius: 5px; /* Round corners */
-        }
-        .comment-button {
-            width: auto; /* Auto width for comment button */
-            padding: 10px; /* Padding for better touch targets */
-            background-color: #90EE90; /* Green for comment button */
-            color: black; /* Black text */
-            border: 1px solid black; /* Black border */
-            border-radius: 5px; /* Round corners */
-            cursor: pointer; /* Pointer cursor on hover */
+        .button-container {
+            display: flex; /* Use flexbox for alignment */
+            justify-content: space-between; /* Space out buttons evenly */
+            margin-top: 10px; /* Margin above buttons */
         }
     </style>
 </head>
@@ -202,18 +171,17 @@ if ($isLoggedIn) {
                 <h3><?php echo htmlspecialchars($post['title']); ?></h3>
                 <p style="text-align: center;"><?php echo htmlspecialchars($post['content']); ?></p>
 
-                <!-- Like button with post ID -->
-                <button class="like-button" data-post-id="<?php echo $post['id']; ?>">Like</button>
-                
-                <!-- Like counter positioned at the bottom right -->
-                <div class="like-counter"><?php echo htmlspecialchars($post['like_count']); ?> Likes</div>
-
-                <!-- Comment section -->
-                <div class="comments-section">
-                    <textarea class="comment-box" placeholder="Write a comment..."></textarea>
-                    <button class="comment-button" data-post-id="<?php echo $post['id']; ?>">Comment</button>
-                    <div class="comments-list"></div>
+                <div class="button-container">
+                    <!-- Like button with post ID -->
+                    <button class="like-button" data-post-id="<?php echo $post['id']; ?>">Like</button>
+                    
+                    <!-- Comment input field -->
+                    <input type="text" class="comment-input" placeholder="Add a comment..." style="flex-grow: 1; margin: 0 5px;">
+                    <button class="comment-button">Post</button>
                 </div>
+                
+                <!-- Like counter positioned at the bottom right, using the count from the database -->
+                <div class="like-counter"><?php echo htmlspecialchars($post['like_count']); ?> Likes</div>
             </div>
         <?php endforeach; ?>
 
@@ -239,34 +207,28 @@ if ($isLoggedIn) {
     <?php endif; ?>
 
     <script>
-    document.addEventListener("DOMContentLoaded", function() {
+        // Like button functionality
         const likeButtons = document.querySelectorAll('.like-button');
-
         likeButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const postId = this.dataset.postId;
-
-                // Send a request to like the post
-                fetch('like_post.php', {
+            button.addEventListener('click', () => {
+                const postId = button.getAttribute('data-post-id');
+                fetch('like.php', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ post_id: postId })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const likeCounter = this.nextElementSibling; // Get the like counter
-                        likeCounter.textContent = `${data.new_like_count} Likes`; // Update the counter
-                    } else {
-                        console.error(data.error); // Log any errors
+                }).then(response => {
+                    if (response.ok) {
+                        // Update like counter on success
+                        const likeCounter = button.parentElement.parentElement.querySelector('.like-counter');
+                        const currentCount = parseInt(likeCounter.textContent) || 0;
+                        likeCounter.textContent = `${currentCount + 1} Likes`;
                     }
-                })
-                .catch(error => console.error('Error:', error));
+                });
             });
         });
-    });
     </script>
 </body>
 </html>
+
