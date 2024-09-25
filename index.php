@@ -90,7 +90,7 @@ if ($isLoggedIn) {
         .post h3 {
             margin-left: 72px; /* Create space from the left so it doesn't overlap with the author box */
             word-wrap: break-word; /* Break long words into the next line */
-            margin-top: 20px; /* Increased top margin for more space from the top */
+            margin-top: 30px; /* Increased top margin to prevent overlap with like counter */
         }
         .post p {
             padding-bottom: 9px; /* Reduced padding at the bottom */
@@ -244,4 +244,3 @@ if ($isLoggedIn) {
     </script>
 </body>
 </html>
-
