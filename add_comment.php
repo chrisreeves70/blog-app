@@ -2,31 +2,43 @@
 session_start();
 require 'config.php'; // Include the database connection
 
-// Enable error reporting for debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// Handle comment submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true); // Get JSON input
+    $post_id = $input['post_id'] ?? null; // Get post ID
+    $comment = $input['comment'] ?? null; // Get comment
 
-// Check if the user is logged in
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'error' => 'User not logged in']);
-    exit();
-}
+    if ($post_id && $comment && isset($_SESSION['user_id'])) {
+        // Prepare and execute SQL statement to insert the comment
+        $stmt = $conn->prepare("INSERT INTO comments (post_id, user_id, comment) VALUES (?, ?, ?)");
+        $stmt->bind_param("iis", $post_id, $_SESSION['user_id'], $comment);
 
-// Get the POST data
-$data = json_decode(file_get_contents('php://input'), true);
-$postId = $data['post_id'];
-$comment = $data['comment'];
+        if ($stmt->execute()) {
+            // Get the username of the commenter
+            $commenter_stmt = $conn->prepare("SELECT username FROM users WHERE id = ?");
+            $commenter_stmt->bind_param("i", $_SESSION['user_id']);
+            $commenter_stmt->execute();
+            $commenter_stmt->bind_result($commenter_username);
+            $commenter_stmt->fetch();
+            $commenter_stmt->close();
 
-// Prepare and execute SQL statement to insert comment
-$stmt = $conn->prepare("INSERT INTO comments (post_id, user_id, comment) VALUES (?, ?, ?)");
-$stmt->bind_param("iis", $postId, $_SESSION['user_id'], $comment);
-
-if ($stmt->execute()) {
-    echo json_encode(['success' => true]);
+            // Return success response
+            echo json_encode([
+                'success' => true,
+                'commenter_username' => htmlspecialchars($commenter_username), // Ensure safe output
+                'comment' => htmlspecialchars($comment), // Ensure safe output
+            ]);
+        } else {
+            // Return error response
+            echo json_encode(['success' => false, 'error' => 'Failed to add comment.']);
+        }
+        $stmt->close(); // Close statement
+    } else {
+        // Return error response
+        echo json_encode(['success' => false, 'error' => 'Invalid input.']);
+    }
 } else {
-    echo json_encode(['success' => false, 'error' => 'Failed to add comment']);
+    // Return error response
+    echo json_encode(['success' => false, 'error' => 'Invalid request method.']);
 }
-
-$stmt->close();
 ?>
-
