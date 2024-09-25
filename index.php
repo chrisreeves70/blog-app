@@ -91,6 +91,7 @@ if ($isLoggedIn) {
             margin-left: 72px; /* Create space from the left so it doesn't overlap with the author box */
             word-wrap: break-word; /* Break long words into the next line */
             margin-top: 45px; /* Increased top margin to prevent overlap with like counter */
+            text-align: center; /* Center the title */
         }
         .post p {
             padding-bottom: 9px; /* Reduced padding at the bottom */
