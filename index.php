@@ -95,7 +95,7 @@ if ($isLoggedIn) {
             margin-top: 10px; /* Add top margin to give more space from the top */
         }
         .post p {
-            padding-bottom: 30px; /* Add padding at the bottom to prevent overlap with like button */
+            padding-bottom: 30px; /* Add padding at the bottom to prevent overlap with buttons */
         }
         form {
             margin: 20px auto; /* Center forms */
@@ -145,13 +145,14 @@ if ($isLoggedIn) {
             background-color: #90EE90; /* Green for Like button */
             color: black; /* Black text */
             border: 1px solid black; /* Black border */
-            padding: 2px 4px; /* Reduced padding for size */
+            padding: 5px 10px; /* Padding for size */
             border-radius: 5px; /* Round corners */
             cursor: pointer; /* Pointer cursor on hover */
-            font-size: 9px; /* Smaller font size */
-            margin-top: 10px; /* Space above button */
-            width: 60px; /* Fixed width for the button */
-            position: relative; /* Change to relative positioning */
+            font-size: 12px; /* Standard font size */
+            margin-right: 10px; /* Space between buttons */
+            position: absolute; /* Position relative to the post */
+            bottom: 10px; /* Distance from the bottom */
+            left: 10px; /* Distance from the left side */
             z-index: 1; /* Ensure button is above other elements */
         }
         .like-counter {
@@ -162,12 +163,14 @@ if ($isLoggedIn) {
             padding: 5px 10px; /* Padding for the bubble */
             position: absolute; /* Position relative to the post */
             bottom: 10px; /* Distance from the bottom */
-            left: 80px; /* Adjusted left position to avoid overlap with like button */
+            right: 10px; /* Distance from the right side */
             font-size: 10px; /* Font size for the counter */
         }
         .comments-section {
             margin-top: 10px; /* Space above comments section */
             text-align: left; /* Left align text in comments */
+            position: relative; /* Position for absolute elements */
+            margin-bottom: 40px; /* Additional space below comments section */
         }
         .comment-box {
             width: 100%; /* Full width for comment box */
@@ -202,7 +205,7 @@ if ($isLoggedIn) {
                 <!-- Like button with post ID -->
                 <button class="like-button" data-post-id="<?php echo $post['id']; ?>">Like</button>
                 
-                <!-- Like counter positioned below and to the left of the button -->
+                <!-- Like counter positioned at the bottom right -->
                 <div class="like-counter"><?php echo htmlspecialchars($post['like_count']); ?> Likes</div>
 
                 <!-- Comment section -->
@@ -213,22 +216,57 @@ if ($isLoggedIn) {
                 </div>
             </div>
         <?php endforeach; ?>
-        <form action="logout.php" method="POST">
+
+        <!-- Logout button -->
+        <form method="POST" action="logout.php">
             <button type="submit" class="logout-button">Logout</button>
         </form>
+
     <?php else: ?>
-        <h1>Login</h1>
+        <h1>Login to view posts</h1>
         <?php if (isset($login_error)): ?>
-            <p style="color: red;"><?php echo $login_error; ?></p>
+            <p style="color:red;"><?php echo $login_error; ?></p>
         <?php endif; ?>
-        <form action="" method="POST">
+        <form method="POST">
             <input type="email" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit" name="login">Login</button>
         </form>
-        <button class="sign-up-button" onclick="window.location.href='signup.php'">Sign Up</button>
+
+        <!-- Sign up and Admin login buttons -->
+        <button class="sign-up-button" onclick="window.location.href='register.php'">Not a User? Sign Up</button>
         <button class="admin-login-button" onclick="window.location.href='admin_login.php'">Admin Login</button>
     <?php endif; ?>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const likeButtons = document.querySelectorAll('.like-button');
+
+        likeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const postId = this.dataset.postId;
+
+                // Send a request to like the post
+                fetch('like_post.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ post_id: postId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const likeCounter = this.nextElementSibling; // Get the like counter
+                        likeCounter.textContent = `${data.new_like_count} Likes`; // Update the counter
+                    } else {
+                        console.error(data.error); // Log any errors
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+    });
+    </script>
 </body>
 </html>
-
