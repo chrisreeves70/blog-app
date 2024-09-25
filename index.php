@@ -215,7 +215,8 @@ if ($isLoggedIn) {
                         <?php foreach ($post['comments'] as $comment): ?>
                             <div class="comment">
                                 <strong><?php echo htmlspecialchars($comment['commenter_username']); ?>:</strong>
-                                <span><?php echo htmlspecialchars($comment['comment']); ?></span>
+                                <span><?php echo htmlspecialchars($comment['comment'] ?? ''); ?></span>
+
                             </div>
                         <?php endforeach; ?>
                     <?php endif; ?>
