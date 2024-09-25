@@ -117,13 +117,10 @@ if ($isLoggedIn) {
         button[type="submit"] {
             background-color: #90EE90; /* Light green for login button */
         }
-        .create-post-button,
-        .like-button,
-        .comment-button {
-            background-color: #90EE90; /* Green for create post and like buttons */
+        .create-post-button {
+            background-color: #90EE90; /* Green for create post button */
             width: auto; /* Make button auto-sized */
             padding: 10px 20px; /* Adjust padding */
-            margin: 5px; /* Margin for spacing */
         }
         .logout-button {
             background-color: #FF4500 !important; /* Red for logout button with !important to override other styles */
@@ -134,12 +131,24 @@ if ($isLoggedIn) {
             border: 1px solid black; /* Add black border */
             border-radius: 5px; /* Round corners */
         }
-        .sign-up-button,
-        .admin-login-button {
-            background-color: #007BFF; /* Muted blue for sign-up and admin login buttons */
+        .sign-up-button {
+            background-color: #007BFF; /* Muted blue for sign-up button */
             width: auto; /* Make button auto-sized */
             padding: 10px 20px; /* Adjust padding */
-            margin: 5px; /* Margin for spacing */
+        }
+        .admin-login-button {
+            background-color: #FF4500; /* Muted red for admin login button */
+            width: auto; /* Make button auto-sized */
+            padding: 10px 20px; /* Adjust padding */
+        }
+        .like-button, .comment-button {
+            background-color: #90EE90; /* Green for buttons */
+            color: black; /* Black text */
+            border: 1px solid black; /* Black border */
+            border-radius: 5px; /* Round corners */
+            cursor: pointer; /* Pointer cursor on hover */
+            padding: 5px 10px; /* Padding for buttons */
+            margin: 5px; /* Space between buttons */
         }
         .like-counter {
             background-color: #fadce0; /* Red background for the like counter */
@@ -147,15 +156,14 @@ if ($isLoggedIn) {
             border: 1px solid black; /* Black border */
             border-radius: 30px; /* Round bubble shape */
             padding: 5px 10px; /* Padding for the bubble */
-            position: absolute; /* Position relative to the post */
-            bottom: 10px; /* Distance from the bottom */
-            right: 10px; /* Distance from the right side */
-            font-size: 10px; /* Font size for the counter */
+            display: inline-block; /* Inline block for the counter */
+            margin: 5px; /* Space between counter and buttons */
+            float: right; /* Position to the right */
         }
         .button-container {
+            margin-top: 10px; /* Space above buttons */
             display: flex; /* Use flexbox for alignment */
             justify-content: space-between; /* Space out buttons evenly */
-            margin-top: 10px; /* Margin above buttons */
         }
     </style>
 </head>
@@ -207,27 +215,34 @@ if ($isLoggedIn) {
     <?php endif; ?>
 
     <script>
-        // Like button functionality
+    document.addEventListener("DOMContentLoaded", function() {
         const likeButtons = document.querySelectorAll('.like-button');
+
         likeButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const postId = button.getAttribute('data-post-id');
-                fetch('like.php', {
+            button.addEventListener('click', function() {
+                const postId = this.dataset.postId;
+
+                // Send a request to like the post
+                fetch('like_post.php', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({ post_id: postId })
-                }).then(response => {
-                    if (response.ok) {
-                        // Update like counter on success
-                        const likeCounter = button.parentElement.parentElement.querySelector('.like-counter');
-                        const currentCount = parseInt(likeCounter.textContent) || 0;
-                        likeCounter.textContent = `${currentCount + 1} Likes`;
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const likeCounter = this.parentElement.nextElementSibling; // Get the like counter
+                        likeCounter.textContent = `${data.new_like_count} Likes`; // Update the counter
+                    } else {
+                        console.error(data.error); // Log any errors
                     }
-                });
+                })
+                .catch(error => console.error('Error:', error));
             });
         });
+    });
     </script>
 </body>
 </html>
