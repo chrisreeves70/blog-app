@@ -33,11 +33,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             exit();
         } else {
             $login_error = "Invalid password."; // Incorrect password message
-            error_log("Invalid password for email: $email"); // Log for debugging
         }
     } else {
         $login_error = "No user found with that email."; // No user message
-        error_log("No user found with email: $email"); // Log for debugging
     }
 
     $stmt->close(); // Close statement
@@ -70,7 +68,7 @@ if ($isLoggedIn) {
         }
         .post {
             margin: 20px auto; /* Center and add margin between posts */
-            width: 22.5%; /* Set post width to 90% of the original */
+            width: 22.5%; /* Set post width */
             border: 1px solid #ccc; /* Optional: add a border */
             padding: 9px; /* Optional: add padding */
             border-radius: 5px; /* Optional: round corners */
@@ -159,7 +157,7 @@ if ($isLoggedIn) {
             display: inline-block; /* Inline block for the counter */
             margin: 4.5px; /* Space between counter and buttons */
             position: absolute; /* Positioning for absolute placement */
-            top: 40px; /* Adjusted distance from the top */
+            top: 10px; /* Adjusted distance from the top */
             right: 10px; /* Distance from the right */
             padding: 5px 10px; /* Additional padding */
         }
@@ -246,3 +244,4 @@ if ($isLoggedIn) {
     </script>
 </body>
 </html>
+
