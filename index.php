@@ -14,37 +14,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    // Prepare and execute SQL statement to find user by email
+    // Prepare and execute SQL statement to find the user by email
     $stmt = $conn->prepare("SELECT id, password, username FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $stmt->store_result();
 
-    // Check if user exists
+    // Check if the user exists in the database
     if ($stmt->num_rows > 0) {
         $stmt->bind_result($id, $hashed_password, $username);
         $stmt->fetch();
 
-        // Verify password
+        // Verify the provided password against the hashed password
         if (password_verify($password, $hashed_password)) {
-            $_SESSION['user_id'] = $id; // Store user ID in session
-            $_SESSION['username'] = $username; // Store username in session
-            header("Location: index.php"); // Redirect to self
+            $_SESSION['user_id'] = $id; // Store the user's ID in the session
+            $_SESSION['username'] = $username; // Store the username in the session
+            header("Location: index.php"); // Redirect to the main page
             exit();
         } else {
-            $login_error = "Invalid password."; // Incorrect password message
+            $login_error = "Invalid password."; // Message for incorrect password
         }
     } else {
-        $login_error = "No user found with that email."; // No user message
+        $login_error = "No user found with that email."; // Message for non-existent user
     }
 
-    $stmt->close(); // Close statement
+    $stmt->close(); // Close the prepared statement
 }
 
-// Fetch posts from the database if logged in
+// Fetch posts from the database if the user is logged in
 $posts = [];
 if ($isLoggedIn) {
-    // Fetch posts along with like counts
+    // Fetch posts along with the like counts from the database
     $result = $conn->query("SELECT posts.*, users.username, 
                                     (SELECT COUNT(*) FROM post_likes WHERE post_id = posts.id) AS like_count 
                              FROM posts 
@@ -61,7 +61,7 @@ if ($isLoggedIn) {
                                              JOIN users ON comments.user_id = users.id 
                                              WHERE comments.post_id = $post_id 
                                              ORDER BY comments.created_at ASC");
-            $post['comments'] = $comment_result->fetch_all(MYSQLI_ASSOC);
+            $post['comments'] = $comment_result->fetch_all(MYSQLI_ASSOC); // Store comments in the post
         }
     }
 }
@@ -209,104 +209,38 @@ if ($isLoggedIn) {
                     <button class="comment-button">Comment</button>
                 </div>
 
-                <!-- Display comments for the post -->
-                <div class="comments-section">
-                    <?php if (!empty($post['comments'])): ?>
-                        <?php foreach ($post['comments'] as $comment): ?>
-                            <div class="comment">
-                                <strong><?php echo htmlspecialchars($comment['commenter_username']); ?>:</strong>
-                                <span><?php echo htmlspecialchars($comment['comment'] ?? ''); ?></span>
-
-                            </div>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
+                <!-- Display comments related to this post -->
+                <div class="comments">
+                    <?php foreach ($post['comments'] as $comment): ?>
+                        <div class="comment">
+                            <strong><?php echo htmlspecialchars($comment['commenter_username']); ?>:</strong>
+                            <?php echo htmlspecialchars($comment['content']); ?>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
         <?php endforeach; ?>
 
-        <form method="post">
-            <button class="logout-button" type="submit" name="logout">Logout</button>
+        <!-- Logout button for the user -->
+        <form action="logout.php" method="POST">
+            <button type="submit" class="logout-button">Logout</button>
         </form>
     <?php else: ?>
-        <h1>Login</h1>
-        <?php if (isset($login_error)): ?>
-            <p><?php echo htmlspecialchars($login_error); ?></p>
-        <?php endif; ?>
-        <form method="post">
-            <input type="email" name="email" required placeholder="Email">
-            <input type="password" name="password" required placeholder="Password">
+        <!-- Login form for users -->
+        <h2>Login</h2>
+        <form action="" method="POST">
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Password" required>
             <button type="submit" name="login">Login</button>
         </form>
-        <button class="sign-up-button" onclick="window.location.href='sign_up.php'">Sign Up</button>
-        <button class="admin-login-button" onclick="window.location.href='admin_login.php'">Admin Login</button>
+        <?php if (isset($login_error)): ?>
+            <p style="color: red;"><?php echo htmlspecialchars($login_error); ?></p> <!-- Display login error messages -->
+        <?php endif; ?>
+        
+        <!-- Links for admin login and sign up -->
+        <a href="admin_login.php"><button class="admin-login-button">Admin Login</button></a>
+        <a href="sign_up.php"><button class="sign-up-button">Sign Up</button></a>
     <?php endif; ?>
-
-    <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const likeButtons = document.querySelectorAll('.like-button');
-
-        likeButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const postId = this.dataset.postId;
-
-                // Send a request to like the post
-                fetch('like_post.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ post_id: postId })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const likeCounter = this.parentElement.previousElementSibling; // Get the like counter
-                        likeCounter.textContent = `${data.new_like_count} Likes`; // Update the counter
-                    } else {
-                        console.error(data.error); // Log any errors
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            });
-        });
-
-        // Handle comment submissions
-        const commentButtons = document.querySelectorAll('.comment-button');
-
-        commentButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const postId = this.parentElement.querySelector('.like-button').dataset.postId; // Get post ID
-                const commentInput = this.parentElement.querySelector('.comment-input'); // Get comment input
-                const commentText = commentInput.value; // Get comment text
-
-                if (commentText.trim()) {
-                    // Send a request to add a comment
-                    fetch('add_comment.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ post_id: postId, comment: commentText })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            commentInput.value = ''; // Clear input on success
-                            // Optionally, you can update the UI to show the new comment
-                            const commentsSection = this.parentElement.parentElement.querySelector('.comments-section'); // Get comments section
-                            const newComment = document.createElement('div'); // Create new comment element
-                            newComment.classList.add('comment'); // Add comment class
-                            newComment.innerHTML = `<strong>${data.commenter_username}:</strong> <span>${commentText}</span>`; // Set inner HTML
-                            commentsSection.appendChild(newComment); // Append new comment to the section
-                        } else {
-                            console.error(data.error); // Log any errors
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-                }
-            });
-        });
-    });
-    </script>
 </body>
 </html>
+
