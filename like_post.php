@@ -1,3 +1,4 @@
+<?php
 session_start();
 require 'config.php';
 
@@ -20,21 +21,32 @@ if ($post_id) {
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
+        // User has already liked this post
         echo json_encode(['success' => false, 'error' => 'Already liked.']);
     } else {
         // Increment like count
         $stmt = $conn->prepare("UPDATE posts SET likes = likes + 1 WHERE id = ?");
         $stmt->bind_param("i", $post_id);
-        $stmt->execute();
-
-        // Record the like in the new table
-        $stmt = $conn->prepare("INSERT INTO post_likes (user_id, post_id) VALUES (?, ?)");
-        $stmt->bind_param("ii", $user_id, $post_id);
-        $stmt->execute();
-
-        echo json_encode(['success' => true, 'new_like_count' => $likes + 1]);
+        
+        if ($stmt->execute()) {
+            // Record the like in the post_likes table
+            $stmt = $conn->prepare("INSERT INTO post_likes (user_id, post_id) VALUES (?, ?)");
+            $stmt->bind_param("ii", $user_id, $post_id);
+            if ($stmt->execute()) {
+                // Fetch the new like count for the post
+                $stmt = $conn->prepare("SELECT likes FROM posts WHERE id = ?");
+                $stmt->bind_param("i", $post_id);
+                $stmt->execute();
+                $stmt->bind_result($likes);
+                $stmt->fetch();
+                echo json_encode(['success' => true, 'new_like_count' => $likes]);
+            } else {
+                echo json_encode(['success' => false, 'error' => 'Failed to record like.']);
+            }
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Failed to increment like count.']);
+        }
     }
 } else {
     echo json_encode(['success' => false, 'error' => 'Invalid post ID.']);
 }
-
