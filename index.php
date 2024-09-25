@@ -87,12 +87,6 @@ if ($isLoggedIn) {
             top: 10px; /* Distance from top */
             left: 10px; /* Distance from left */
         }
-        .post h3 {
-            margin-left: 72px; /* Create space from the left so it doesn't overlap with the author box */
-            word-wrap: break-word; /* Break long words into the next line */
-            margin-top: 45px; /* Increased top margin to prevent overlap with like counter */
-            text-align: center; /* Center the title */
-        }
         .post p {
             padding-bottom: 9px; /* Reduced padding at the bottom */
         }
@@ -178,7 +172,6 @@ if ($isLoggedIn) {
             <div class="post">
                 <!-- Author username displayed in a rectangle -->
                 <div class="author"><?php echo htmlspecialchars($post['username']); ?></div>
-                <h3><?php echo htmlspecialchars($post['title']); ?></h3>
                 <p style="text-align: center;"><?php echo htmlspecialchars($post['content']); ?></p>
 
                 <!-- Like counter positioned at the top right -->
@@ -201,47 +194,21 @@ if ($isLoggedIn) {
         </form>
 
     <?php else: ?>
-        <h1>Login to view posts</h1>
-        <?php if (isset($login_error)): ?>
-            <p style="color:red;"><?php echo htmlspecialchars($login_error); ?></p>
-        <?php endif; ?>
-        <form method="POST">
+        <!-- Login form -->
+        <h2>Login</h2>
+        <form method="POST" action="">
             <input type="email" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit" name="login">Login</button>
-            <p>Don't have an account? <a href="signup.php">Sign up</a></p>
         </form>
+
+        <?php if (isset($login_error)): ?>
+            <p style="color: red;"><?php echo htmlspecialchars($login_error); ?></p>
+        <?php endif; ?>
+
+        <button class="sign-up-button" onclick="window.location.href='signup.php'">Sign Up</button>
+        <button class="admin-login-button" onclick="window.location.href='admin_login.php'">Admin Login</button>
     <?php endif; ?>
-
-    <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const likeButtons = document.querySelectorAll('.like-button');
-
-        likeButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const postId = this.dataset.postId;
-
-                // Send a request to like the post
-                fetch('like_post.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ post_id: postId })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const likeCounter = this.parentElement.previousElementSibling; // Get the like counter
-                        likeCounter.textContent = `${data.new_like_count} Likes`; // Update the counter
-                    } else {
-                        console.error(data.error); // Log any errors
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            });
-        });
-    });
-    </script>
 </body>
 </html>
+
