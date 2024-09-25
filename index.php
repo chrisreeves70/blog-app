@@ -151,9 +151,8 @@ if ($isLoggedIn) {
             font-size: 9px; /* Smaller font size */
             margin-top: 10px; /* Space above button */
             width: 60px; /* Fixed width for the button */
-            position: absolute; /* Position relative to the post */
-            bottom: 10px; /* Distance from the bottom of the post */
-            left: 10px; /* Distance from the left side */
+            position: relative; /* Change to relative positioning */
+            z-index: 1; /* Ensure button is above other elements */
         }
         .like-counter {
             background-color: #fadce0; /* Red background for the like counter */
@@ -163,25 +162,28 @@ if ($isLoggedIn) {
             padding: 5px 10px; /* Padding for the bubble */
             position: absolute; /* Position relative to the post */
             bottom: 10px; /* Distance from the bottom */
-            right: 10px; /* Distance from the right side */
+            left: 80px; /* Adjusted left position to avoid overlap with like button */
             font-size: 10px; /* Font size for the counter */
-        }
-        .comment-box {
-            margin-top: 10px; /* Space above comment box */
-            width: 100%; /* Full width */
-            padding: 5px; /* Padding for better touch targets */
-            border: 1px solid #ccc; /* Light border */
-            border-radius: 5px; /* Round corners */
         }
         .comments-section {
             margin-top: 10px; /* Space above comments section */
+            text-align: left; /* Left align text in comments */
         }
-        .comment {
-            margin-top: 5px; /* Space between comments */
-            padding: 5px; /* Padding for better appearance */
-            border: 1px solid #eee; /* Light border */
+        .comment-box {
+            width: 100%; /* Full width for comment box */
+            margin: 10px 0; /* Margin for spacing */
+            padding: 10px; /* Padding for better touch targets */
+            border: 1px solid black; /* Black border */
             border-radius: 5px; /* Round corners */
-            background-color: #f9f9f9; /* Light background color */
+        }
+        .comment-button {
+            width: auto; /* Auto width for comment button */
+            padding: 10px; /* Padding for better touch targets */
+            background-color: #90EE90; /* Green for comment button */
+            color: black; /* Black text */
+            border: 1px solid black; /* Black border */
+            border-radius: 5px; /* Round corners */
+            cursor: pointer; /* Pointer cursor on hover */
         }
     </style>
 </head>
@@ -200,7 +202,7 @@ if ($isLoggedIn) {
                 <!-- Like button with post ID -->
                 <button class="like-button" data-post-id="<?php echo $post['id']; ?>">Like</button>
                 
-                <!-- Like counter positioned at the bottom right, using the count from the database -->
+                <!-- Like counter positioned below and to the left of the button -->
                 <div class="like-counter"><?php echo htmlspecialchars($post['like_count']); ?> Likes</div>
 
                 <!-- Comment section -->
@@ -211,92 +213,22 @@ if ($isLoggedIn) {
                 </div>
             </div>
         <?php endforeach; ?>
-
-        <!-- Logout button -->
-        <form method="POST" action="logout.php">
+        <form action="logout.php" method="POST">
             <button type="submit" class="logout-button">Logout</button>
         </form>
-
     <?php else: ?>
-        <h1>Login to view posts</h1>
+        <h1>Login</h1>
         <?php if (isset($login_error)): ?>
-            <p style="color:red;"><?php echo $login_error; ?></p>
+            <p style="color: red;"><?php echo $login_error; ?></p>
         <?php endif; ?>
-        <form method="POST">
+        <form action="" method="POST">
             <input type="email" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit" name="login">Login</button>
         </form>
-
-        <!-- Sign up and Admin login buttons -->
-        <button class="sign-up-button" onclick="window.location.href='register.php'">Not a User? Sign Up</button>
+        <button class="sign-up-button" onclick="window.location.href='signup.php'">Sign Up</button>
         <button class="admin-login-button" onclick="window.location.href='admin_login.php'">Admin Login</button>
     <?php endif; ?>
-
-    <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const likeButtons = document.querySelectorAll('.like-button');
-        const commentButtons = document.querySelectorAll('.comment-button');
-
-        // Like button functionality
-        likeButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const postId = this.dataset.postId;
-
-                // Send a request to like the post
-                fetch('like_post.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ post_id: postId })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const likeCounter = this.nextElementSibling; // Get the like counter
-                        likeCounter.textContent = `${data.new_like_count} Likes`; // Update the counter
-                    } else {
-                        console.error(data.error); // Log any errors
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            });
-        });
-
-        // Comment button functionality
-        commentButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const postId = this.dataset.postId;
-                const commentBox = this.previousElementSibling; // Get the comment box
-                const commentText = commentBox.value;
-
-                // Send a request to post the comment
-                fetch('post_comment.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ post_id: postId, comment: commentText })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const commentsList = this.nextElementSibling; // Get the comments list
-                        const newComment = document.createElement('div');
-                        newComment.className = 'comment';
-                        newComment.textContent = commentText; // Add the new comment
-                        commentsList.appendChild(newComment); // Append to comments list
-                        commentBox.value = ''; // Clear the comment box
-                    } else {
-                        console.error(data.error); // Log any errors
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            });
-        });
-    });
-    </script>
 </body>
 </html>
 
