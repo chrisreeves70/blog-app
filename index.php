@@ -89,6 +89,7 @@ if ($isLoggedIn) {
         }
         .post p {
             padding-bottom: 9px; /* Reduced padding at the bottom */
+            margin-bottom: 45px; /* Added margin to create space below the content */
         }
         form {
             margin: 20px auto; /* Center forms */
