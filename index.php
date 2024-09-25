@@ -91,7 +91,7 @@ if ($isLoggedIn) {
 
 .post p {
     padding: 9px 0; /* Padding on top and bottom for spacing */
-    margin: 70px 0 20px; /* Increased margin to create space from author box and bottom */
+    margin: 45px 0 20px; /* Increased margin to create space from author box and bottom */
 }
 
         form {
