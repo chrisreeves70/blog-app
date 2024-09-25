@@ -92,7 +92,7 @@ if ($isLoggedIn) {
         .post h3 {
             margin-left: 72px; /* Create space from the left so it doesn't overlap with the author box */
             word-wrap: break-word; /* Break long words into the next line */
-            margin-top: 9px; /* Add top margin to give more space from the top */
+            margin-top: 20px; /* Increased top margin for more space from the top */
         }
         .post p {
             padding-bottom: 9px; /* Reduced padding at the bottom */
@@ -159,8 +159,9 @@ if ($isLoggedIn) {
             display: inline-block; /* Inline block for the counter */
             margin: 4.5px; /* Space between counter and buttons */
             position: absolute; /* Positioning for absolute placement */
-            top: 10px; /* Distance from the top */
+            top: 40px; /* Adjusted distance from the top */
             right: 10px; /* Distance from the right */
+            padding: 5px 10px; /* Additional padding */
         }
         .button-container {
             margin-top: 27px; /* Space above buttons */
@@ -190,7 +191,7 @@ if ($isLoggedIn) {
                     
                     <!-- Comment input field -->
                     <input type="text" class="comment-input" placeholder="Add a comment..." style="flex-grow: 1; margin: 0 4.5px;">
-                    <button class="comment-button">Post</button>
+                    <button class="comment-button">>>></button>
                 </div>
             </div>
         <?php endforeach; ?>
@@ -203,17 +204,14 @@ if ($isLoggedIn) {
     <?php else: ?>
         <h1>Login to view posts</h1>
         <?php if (isset($login_error)): ?>
-            <p style="color:red;"><?php echo $login_error; ?></p> <!-- Display login error -->
+            <p style="color:red;"><?php echo htmlspecialchars($login_error); ?></p>
         <?php endif; ?>
-        <form method="POST" action="">
+        <form method="POST">
             <input type="email" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit" name="login">Login</button>
+            <p>Don't have an account? <a href="signup.php">Sign up</a></p>
         </form>
-
-        <!-- Sign up and Admin login buttons -->
-        <button class="sign-up-button" onclick="window.location.href='register.php'">Not a User? Sign Up</button>
-        <button class="admin-login-button" onclick="window.location.href='admin_login.php'">Admin Login</button>
     <?php endif; ?>
 
     <script>
@@ -235,7 +233,7 @@ if ($isLoggedIn) {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        const likeCounter = this.closest('.post').querySelector('.like-counter'); // Get the like counter
+                        const likeCounter = this.parentElement.previousElementSibling; // Get the like counter
                         likeCounter.textContent = `${data.new_like_count} Likes`; // Update the counter
                     } else {
                         console.error(data.error); // Log any errors
@@ -248,4 +246,3 @@ if ($isLoggedIn) {
     </script>
 </body>
 </html>
-
